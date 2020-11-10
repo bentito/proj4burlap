@@ -4,6 +4,7 @@ import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 
+
 public class AgentFactory {
 
     public static LearningAgentFactory getQLearner(final SADomain domain, final double gamma, final double qInit, final double learningRate){
@@ -19,5 +20,4 @@ public class AgentFactory {
             }
         };
     }
-
 }
