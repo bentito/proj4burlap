@@ -36,7 +36,8 @@ public class GridWorldSolver extends ProblemAttempt {
     }
 
     @Override
-    void visualize() {
+    public void visualize() {
+        super.visualize();
         EnvVisualize.gridWorld((SADomain) createDomain(), ((GridWorldDomain)domainGenerator).getMap(), initialState);
     }
 

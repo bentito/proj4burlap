@@ -23,7 +23,11 @@ public abstract class ProblemAttempt {
         }
     }
 
-    abstract void visualize();
+    public void visualize(){
+        if(!this.experimentSetup){
+            SetupExperiment();
+        }
+    }
     abstract Domain createDomain();
     abstract DomainGenerator createDomainGenerator();
 }
