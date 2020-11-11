@@ -5,20 +5,25 @@ import burlap.mdp.core.Domain;
 import java.util.function.Function;
 
 
-public abstract class ProblemSolver{
+public abstract class ProblemAttempt {
 
-    LearningAgentFactory agentFactory;
     DomainGenerator domainGenerator;
-    Domain currentDomain;
+    Boolean experimentSetup = false;
 
-    public ProblemSolver(Function<Domain, LearningAgentFactory> agentFactory) {
+    public ProblemAttempt() {}
+
+    protected void SetupExperiment(){
+        this.experimentSetup = true;
         this.domainGenerator = createDomainGenerator();
-        this.currentDomain = createDomain();
-        this.agentFactory = agentFactory.apply(this.currentDomain);
+    }
+
+    public void performExperiment(Function<Domain, LearningAgentFactory> agentFactory){
+        if(!this.experimentSetup){
+            SetupExperiment();
+        }
     }
 
     abstract void visualize();
-    abstract void generatePlots();
     abstract Domain createDomain();
     abstract DomainGenerator createDomainGenerator();
 }

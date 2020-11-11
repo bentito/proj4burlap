@@ -1,18 +1,11 @@
 import burlap.behavior.singleagent.auxiliary.performance.LearningAlgorithmExperimenter;
 import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
 import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
-import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.domain.singleagent.gridworld.state.GridAgent;
-import burlap.domain.singleagent.gridworld.state.GridLocation;
-import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 
 public class Plotter {
