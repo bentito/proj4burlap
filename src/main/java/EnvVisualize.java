@@ -1,3 +1,6 @@
+import burlap.domain.singleagent.cartpole.CartPoleDomain;
+import burlap.domain.singleagent.cartpole.CartPoleVisualizer;
+import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.mdp.core.state.State;
@@ -17,6 +20,14 @@ public class EnvVisualize {
         exp.addKeyAction("s", GridWorldDomain.ACTION_SOUTH, "");
         exp.addKeyAction("a", GridWorldDomain.ACTION_WEST, "");
         exp.addKeyAction("d", GridWorldDomain.ACTION_EAST, "");
+
+        exp.initGUI();
+    }
+
+    public static void cartPole(SADomain domain, State initialState){
+        VisualExplorer exp = new VisualExplorer(domain, CartPoleVisualizer.getCartPoleVisualizer(), initialState);
+        exp.addKeyAction("a", CartPoleDomain.ACTION_LEFT, "");
+        exp.addKeyAction("d", CartPoleDomain.ACTION_RIGHT, "");
 
         exp.initGUI();
     }

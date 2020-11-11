@@ -28,6 +28,10 @@ public abstract class ProblemAttempt {
             SetupExperiment();
         }
     }
-    abstract Domain createDomain();
+
+    protected Domain createDomain(){
+        return domainGenerator.generateDomain();
+    }
+
     abstract DomainGenerator createDomainGenerator();
 }

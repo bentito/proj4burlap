@@ -31,11 +31,6 @@ public class GridWorldSolver extends ProblemAttempt {
     }
 
     @Override
-    Domain createDomain() {
-        return domainGenerator.generateDomain();
-    }
-
-    @Override
     public void visualize() {
         super.visualize();
         EnvVisualize.gridWorld((SADomain) createDomain(), ((GridWorldDomain)domainGenerator).getMap(), initialState);
