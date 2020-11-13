@@ -19,15 +19,19 @@ import java.util.function.Function;
 public class GridWorldSolver extends ProblemAttempt {
 
     State initialState;
+    int width;
+    int height;
 
     public GridWorldSolver() {
         super();
+        width = 11;
+        height = 11;
     }
 
     @Override
     protected void SetupExperiment() {
         super.SetupExperiment();
-        initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(10, 10, "loc0"));
+        initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(width - 1, height - 1, "loc0"));
     }
 
     @Override
@@ -45,7 +49,7 @@ public class GridWorldSolver extends ProblemAttempt {
 
     @Override
     DomainGenerator createDomainGenerator() {
-        GridWorldDomain gridWorldGenerator = new GridWorldDomain(11,11); //11x11 grid world
+        GridWorldDomain gridWorldGenerator = new GridWorldDomain(width, height); //11x11 grid world
         gridWorldGenerator.setMapToFourRooms();
         //stochastic transitions with 0.8 success rate
         gridWorldGenerator.setProbSucceedTransitionDynamics(0.8);
