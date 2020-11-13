@@ -1,8 +1,12 @@
+package ml_assn4;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Main {
+
+    public static int SEED = 5;
 
     public static void main(String[] args) {
         boolean shouldExperiment = false;
@@ -12,7 +16,7 @@ public class Main {
 
         List<ProblemAttempt> problemList = new ArrayList<>();
         problemList.add(new GridWorldSolver());
-//        problemList.add(new CartPoleSolver());
+//        problemList.add(new ml_assn4.CartPoleSolver());
 
         for (ProblemAttempt attempt : problemList) {
             if (shouldExperiment){
