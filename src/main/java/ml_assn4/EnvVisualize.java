@@ -33,10 +33,10 @@ public class EnvVisualize {
         exp.initGUI();
     }
 
-    public static void gridWorldPolicy(SADomain domain, State initialState, ValueFunction valueFunction, Policy p){
+    public static void gridWorldPolicy(SADomain domain, State initialState, ValueFunction valueFunction, Policy p, int width, int height){
         SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
         List<State> allStates = StateReachability.getReachableStates(initialState, domain, hashingFactory);
-        ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(allStates, 11, 11, valueFunction, p);
+        ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(allStates, width, height, valueFunction, p);
         gui.initGUI();
 
     }

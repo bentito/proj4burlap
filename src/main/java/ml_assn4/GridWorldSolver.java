@@ -17,19 +17,18 @@ import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import ml_assn4.maze_generation.Maze;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.Function;
 
 public class GridWorldSolver extends ProblemAttempt {
 
     State initialState;
-    int width = 11;
-    int height = 11;
+    int w;
+    int h;
 
-    int goalX = width-1;
-    int goalY = height-1;
-    int holeX = width-3;
-    int holeY = 2;
+    int mazeWdth = 10;
+    int mazeHeight = 10;
 
     public GridWorldSolver() {
         super();
@@ -64,7 +63,7 @@ public class GridWorldSolver extends ProblemAttempt {
         // policy iteration
         Planner policyPlanner = new PolicyIteration(currentDomain, 0.99, hashingFactory, 0.001, 100, 100);
         Policy policyPolicy = policyPlanner.planFromState(initialState);
-        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)policyPlanner, policyPolicy);
+        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)policyPlanner, policyPolicy, w, h);
 
         // qlearning agent
 //        LearningAgentFactory qAgentFactory = agentFactory.apply(currentDomain);
@@ -95,21 +94,33 @@ public class GridWorldSolver extends ProblemAttempt {
 
     @Override
     DomainGenerator createDomainGenerator() {
-        GridWorldDomain gridWorldGenerator = new GridWorldDomain(width, height); //11x11 grid world
-        gridWorldGenerator.setProbSucceedTransitionDynamics(0.8);
-        Maze m = new Maze(6, 6);
+        Maze m = new Maze(mazeWdth, mazeHeight);
         String mazeStr = m.toString();
-//        gridWorldGenerator.setMapToFourRooms();
-//        gridWorldGenerator.setCellWallState();
+        String[] mazeArrs = mazeStr.split("\n");
+        mazeArrs = ArrayUtils.remove(mazeArrs, 0);
+        mazeArrs = ArrayUtils.remove(mazeArrs, mazeArrs.length-1);
+
+        w = mazeArrs[0].length()-2;
+        h = mazeArrs.length;
+
+        GridWorldDomain gridWorldGenerator = new GridWorldDomain(w, h); //11x11 grid world
         //stochastic transitions with 0.8 success rate
+        gridWorldGenerator.setProbSucceedTransitionDynamics(0.8);
+
+        for (int i = 0; i < mazeArrs.length; i++) {
+            String rowString = mazeArrs[i].substring(1, mazeArrs[i].length()-1);
+            for (int j = 0; j < rowString.length(); j++) {
+                if(rowString.charAt(j) == '#'){
+                    gridWorldGenerator.setCellWallState(i, j, 1);
+                }
+            }
+        }
 
         GridWorldTerminalFunction tf = new GridWorldTerminalFunction();
-        tf.markAsTerminalPosition(goalX, goalY);
-        tf.markAsTerminalPosition(holeX, holeY);
+        tf.markAsTerminalPosition(w-1, 0);
 
-        GridWorldRewardFunction rf = new CustomGridWorldRewardFunction(width, height, -0.1);
-        rf.setReward(goalX, goalY, 5.);
-        rf.setReward(holeX, holeY, -5.);
+        GridWorldRewardFunction rf = new CustomGridWorldRewardFunction(w, h, -0.1);
+        rf.setReward(w-1, 0, 5.);
 
         gridWorldGenerator.setTf(tf);
         gridWorldGenerator.setRf(rf);
