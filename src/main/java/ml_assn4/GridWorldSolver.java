@@ -1,8 +1,9 @@
+package ml_assn4;
+
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
@@ -15,6 +16,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
+import ml_assn4.maze_generation.Maze;
 
 import java.util.function.Function;
 
@@ -57,7 +59,7 @@ public class GridWorldSolver extends ProblemAttempt {
 //        Planner valuePlanner = new ValueIteration(currentDomain, 0.99, hashingFactory, 0.001, 100);
 //        Policy valuePolicy = valuePlanner.planFromState(initialState);
 ////        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
-//        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy);
+//        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy);
 
         // policy iteration
         Planner policyPlanner = new PolicyIteration(currentDomain, 0.99, hashingFactory, 0.001, 100, 100);
@@ -86,17 +88,20 @@ public class GridWorldSolver extends ProblemAttempt {
 //            //reset environment for next learning episode
 //            env.resetEnvironment();
 //        }
-//        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy);
+//        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy);
 
-//        Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
+//        ml_assn4.Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
     }
 
     @Override
     DomainGenerator createDomainGenerator() {
         GridWorldDomain gridWorldGenerator = new GridWorldDomain(width, height); //11x11 grid world
-        gridWorldGenerator.setMapToFourRooms();
-        //stochastic transitions with 0.8 success rate
         gridWorldGenerator.setProbSucceedTransitionDynamics(0.8);
+        Maze m = new Maze(6, 6);
+        String mazeStr = m.toString();
+//        gridWorldGenerator.setMapToFourRooms();
+//        gridWorldGenerator.setCellWallState();
+        //stochastic transitions with 0.8 success rate
 
         GridWorldTerminalFunction tf = new GridWorldTerminalFunction();
         tf.markAsTerminalPosition(goalX, goalY);
