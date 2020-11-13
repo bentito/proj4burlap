@@ -1,9 +1,14 @@
 package ml_assn4;
 
+import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.Episode;
+import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.behavior.singleagent.learning.tdmethods.QLearning;
 import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
@@ -11,10 +16,12 @@ import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import ml_assn4.maze_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
@@ -38,7 +45,7 @@ public class GridWorldSolver extends ProblemAttempt {
     protected void SetupExperiment() {
         super.SetupExperiment();
         initialState = new GridWorldState(
-                new GridAgent(0, 0)
+                new GridAgent(0, h-1)
         );
     }
 
@@ -55,10 +62,10 @@ public class GridWorldSolver extends ProblemAttempt {
 
         SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
         // value iteration
-//        Planner valuePlanner = new ValueIteration(currentDomain, 0.99, hashingFactory, 0.001, 100);
-//        Policy valuePolicy = valuePlanner.planFromState(initialState);
-////        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
-//        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy);
+        Planner valuePlanner = new ValueIteration(currentDomain, 0.99, hashingFactory, 0.001, 100);
+        Policy valuePolicy = valuePlanner.planFromState(initialState);
+//        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
+        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy, w, h);
 
         // policy iteration
         Planner policyPlanner = new PolicyIteration(currentDomain, 0.99, hashingFactory, 0.001, 100, 100);
@@ -66,28 +73,28 @@ public class GridWorldSolver extends ProblemAttempt {
         EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)policyPlanner, policyPolicy, w, h);
 
         // qlearning agent
-//        LearningAgentFactory qAgentFactory = agentFactory.apply(currentDomain);
-//        LearningAgent qAgent = qAgentFactory.generateAgent();
-//        Policy qPolicy = new EpsilonGreedy((QLearning)qAgent, 0.1);
-//        ((QLearning) qAgent).setLearningPolicy(qPolicy);
-//
-//        //initial state generator
-//        final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
-//
-//        //define learning environment
-//        SimulatedEnvironment env = new SimulatedEnvironment(currentDomain, sg);
-//
-//        //run learning for 50 episodes
-//        for(int i = 0; i < 2500; i++){
-//            Episode e = qAgent.runLearningEpisode(env);
-//
-////            e.write(outputPath + "ql_" + i);
-////            System.out.println(i + ": " + e.maxTimeStep());
-//
-//            //reset environment for next learning episode
-//            env.resetEnvironment();
-//        }
-//        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy);
+        LearningAgentFactory qAgentFactory = agentFactory.apply(currentDomain);
+        LearningAgent qAgent = qAgentFactory.generateAgent();
+        Policy qPolicy = new EpsilonGreedy((QLearning)qAgent, 0.1);
+        ((QLearning) qAgent).setLearningPolicy(qPolicy);
+
+        //initial state generator
+        final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
+
+        //define learning environment
+        SimulatedEnvironment env = new SimulatedEnvironment(currentDomain, sg);
+
+        //run learning for 50 episodes
+        for(int i = 0; i < 2500; i++){
+            Episode e = qAgent.runLearningEpisode(env);
+
+//            e.write(outputPath + "ql_" + i);
+//            System.out.println(i + ": " + e.maxTimeStep());
+
+            //reset environment for next learning episode
+            env.resetEnvironment();
+        }
+        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy, w, h);
 
 //        ml_assn4.Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
     }
