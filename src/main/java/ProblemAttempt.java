@@ -23,7 +23,7 @@ public abstract class ProblemAttempt {
         }
     }
 
-    public void visualize(){
+    public void visualizeProblem(){
         if(!this.experimentSetup){
             SetupExperiment();
         }

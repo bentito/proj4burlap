@@ -25,8 +25,8 @@ public class CartPoleSolver extends ProblemAttempt {
     }
 
     @Override
-    public void visualize() {
-        super.visualize();
+    public void visualizeProblem() {
+        super.visualizeProblem();
         EnvVisualize.cartPole((SADomain) createDomain(), initialState);
     }
 

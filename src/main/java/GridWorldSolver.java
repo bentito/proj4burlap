@@ -1,50 +1,94 @@
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.behavior.singleagent.planning.Planner;
+import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
+import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
+import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
+import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
-import burlap.domain.singleagent.gridworld.state.GridLocation;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.auxiliary.common.SinglePFTF;
-import burlap.mdp.auxiliary.stateconditiontest.TFGoalCondition;
 import burlap.mdp.core.Domain;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.oo.propositional.PropositionalFunction;
+import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.common.GoalBasedRF;
-import burlap.mdp.singleagent.model.RewardFunction;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 
 import java.util.function.Function;
 
 public class GridWorldSolver extends ProblemAttempt {
 
     State initialState;
-    int width;
-    int height;
+    int width = 11;
+    int height = 11;
+
+    int goalX = width-1;
+    int goalY = height-1;
+    int holeX = width-3;
+    int holeY = 2;
 
     public GridWorldSolver() {
         super();
-        width = 11;
-        height = 11;
     }
 
     @Override
     protected void SetupExperiment() {
         super.SetupExperiment();
-        initialState = new GridWorldState(new GridAgent(0, 0), new GridLocation(width - 1, height - 1, "loc0"));
+        initialState = new GridWorldState(
+                new GridAgent(0, 0)
+        );
     }
 
     @Override
-    public void visualize() {
-        super.visualize();
+    public void visualizeProblem() {
+        super.visualizeProblem();
         EnvVisualize.gridWorld((SADomain) createDomain(), ((GridWorldDomain)domainGenerator).getMap(), initialState);
     }
 
     @Override
     public void performExperiment(Function<Domain, LearningAgentFactory> agentFactory) {
         super.performExperiment(agentFactory);
-        Domain currentDomain = createDomain();
-        Plotter.plot((SADomain)currentDomain, initialState, agentFactory.apply(currentDomain));
+        SADomain currentDomain = (SADomain) createDomain();
+
+        SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+        // value iteration
+//        Planner valuePlanner = new ValueIteration(currentDomain, 0.99, hashingFactory, 0.001, 100);
+//        Policy valuePolicy = valuePlanner.planFromState(initialState);
+////        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
+//        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy);
+
+        // policy iteration
+        Planner policyPlanner = new PolicyIteration(currentDomain, 0.99, hashingFactory, 0.001, 100, 100);
+        Policy policyPolicy = policyPlanner.planFromState(initialState);
+        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)policyPlanner, policyPolicy);
+
+        // qlearning agent
+//        LearningAgentFactory qAgentFactory = agentFactory.apply(currentDomain);
+//        LearningAgent qAgent = qAgentFactory.generateAgent();
+//        Policy qPolicy = new EpsilonGreedy((QLearning)qAgent, 0.1);
+//        ((QLearning) qAgent).setLearningPolicy(qPolicy);
+//
+//        //initial state generator
+//        final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
+//
+//        //define learning environment
+//        SimulatedEnvironment env = new SimulatedEnvironment(currentDomain, sg);
+//
+//        //run learning for 50 episodes
+//        for(int i = 0; i < 2500; i++){
+//            Episode e = qAgent.runLearningEpisode(env);
+//
+////            e.write(outputPath + "ql_" + i);
+////            System.out.println(i + ": " + e.maxTimeStep());
+//
+//            //reset environment for next learning episode
+//            env.resetEnvironment();
+//        }
+//        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy);
+
+//        Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
     }
 
     @Override
@@ -54,19 +98,28 @@ public class GridWorldSolver extends ProblemAttempt {
         //stochastic transitions with 0.8 success rate
         gridWorldGenerator.setProbSucceedTransitionDynamics(0.8);
 
-        //ends when the agent reaches a location
-        final TerminalFunction tf = new SinglePFTF(
-                PropositionalFunction.findPF(
-                        gridWorldGenerator.generatePfs(),
-                        GridWorldDomain.PF_AT_LOCATION
-                )
-        );
+        GridWorldTerminalFunction tf = new GridWorldTerminalFunction();
+        tf.markAsTerminalPosition(goalX, goalY);
+        tf.markAsTerminalPosition(holeX, holeY);
 
-        //reward function definition
-        final RewardFunction rf = new GoalBasedRF(new TFGoalCondition(tf), 5., -0.1);
+        GridWorldRewardFunction rf = new CustomGridWorldRewardFunction(width, height, -0.1);
+        rf.setReward(goalX, goalY, 5.);
+        rf.setReward(holeX, holeY, -5.);
 
         gridWorldGenerator.setTf(tf);
         gridWorldGenerator.setRf(rf);
         return gridWorldGenerator;
+    }
+}
+
+class CustomGridWorldRewardFunction extends GridWorldRewardFunction {
+
+    public CustomGridWorldRewardFunction(int width, int height, double initializingReward) {
+        super(width, height, initializingReward);
+    }
+
+    @Override
+    public double reward(State s, Action a, State sprime) {
+        return super.reward(sprime, a, s);
     }
 }
