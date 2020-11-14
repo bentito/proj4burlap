@@ -1,6 +1,7 @@
 package ml_assn4;
 
-import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.cartpole.CartPoleDomain;
 import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
 import burlap.mdp.auxiliary.DomainGenerator;
@@ -9,8 +10,10 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.model.RewardFunction;
+import javafx.util.Pair;
 
-import java.util.function.Function;
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class CartPoleSolver extends ProblemAttempt {
 
@@ -33,10 +36,16 @@ public class CartPoleSolver extends ProblemAttempt {
     }
 
     @Override
-    public void performExperiment(Function<Domain, LearningAgentFactory> agentFactory) {
-        super.performExperiment(agentFactory);
+    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts) {
+        super.performExperiment(algAttempts);
         Domain currentDomain = createDomain();
-        Plotter.plot((SADomain)currentDomain, initialState, agentFactory.apply(currentDomain));
+
+        for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
+            Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
+            //do something with alg results
+        }
+
+//        Plotter.plot((SADomain)currentDomain, initialState, agentFactory.apply(currentDomain));
     }
 
     @Override

@@ -1,9 +1,15 @@
 package ml_assn4;
 
+import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
+import burlap.mdp.core.state.State;
+import javafx.util.Pair;
 
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
@@ -19,7 +25,7 @@ public abstract class ProblemAttempt {
         this.domainGenerator = createDomainGenerator();
     }
 
-    public void performExperiment(Function<Domain, LearningAgentFactory> agentFactory){
+    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts){
         if(!this.experimentSetup){
             SetupExperiment();
         }

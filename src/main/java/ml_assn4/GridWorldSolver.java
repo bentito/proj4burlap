@@ -1,14 +1,6 @@
 package ml_assn4;
 
-import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.Episode;
-import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.learning.LearningAgentFactory;
-import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.planning.Planner;
-import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
@@ -16,17 +8,16 @@ import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.statehashing.simple.SimpleHashableStateFactory;
+import javafx.util.Pair;
 import ml_assn4.maze_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.function.Function;
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class GridWorldSolver extends ProblemAttempt {
 
@@ -36,6 +27,18 @@ public class GridWorldSolver extends ProblemAttempt {
 
     int mazeWdth = 10;
     int mazeHeight = 10;
+
+    class CustomGridWorldRewardFunction extends GridWorldRewardFunction {
+
+        public CustomGridWorldRewardFunction(int width, int height, double initializingReward) {
+            super(width, height, initializingReward);
+        }
+
+        @Override
+        public double reward(State s, Action a, State sprime) {
+            return super.reward(sprime, a, s);
+        }
+    }
 
     public GridWorldSolver() {
         super();
@@ -56,45 +59,14 @@ public class GridWorldSolver extends ProblemAttempt {
     }
 
     @Override
-    public void performExperiment(Function<Domain, LearningAgentFactory> agentFactory) {
-        super.performExperiment(agentFactory);
+    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts) {
+        super.performExperiment(algAttempts);
         SADomain currentDomain = (SADomain) createDomain();
 
-        SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-        // value iteration
-        Planner valuePlanner = new ValueIteration(currentDomain, 0.99, hashingFactory, 0.001, 100);
-        Policy valuePolicy = valuePlanner.planFromState(initialState);
-//        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
-        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)valuePlanner, valuePolicy, w, h);
-
-        // policy iteration
-        Planner policyPlanner = new PolicyIteration(currentDomain, 0.99, hashingFactory, 0.001, 100, 100);
-        Policy policyPolicy = policyPlanner.planFromState(initialState);
-        EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)policyPlanner, policyPolicy, w, h);
-
-        // qlearning agent
-        LearningAgentFactory qAgentFactory = agentFactory.apply(currentDomain);
-        LearningAgent qAgent = qAgentFactory.generateAgent();
-        Policy qPolicy = new EpsilonGreedy((QLearning)qAgent, 0.1);
-        ((QLearning) qAgent).setLearningPolicy(qPolicy);
-
-        //initial state generator
-        final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
-
-        //define learning environment
-        SimulatedEnvironment env = new SimulatedEnvironment(currentDomain, sg);
-
-        //run learning for 50 episodes
-        for(int i = 0; i < 2500; i++){
-            Episode e = qAgent.runLearningEpisode(env);
-
-//            e.write(outputPath + "ql_" + i);
-//            System.out.println(i + ": " + e.maxTimeStep());
-
-            //reset environment for next learning episode
-            env.resetEnvironment();
+        for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
+            Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
+            ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
         }
-        ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, (ValueFunction)qAgent, qPolicy, w, h);
 
 //        ml_assn4.Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
     }
@@ -132,17 +104,5 @@ public class GridWorldSolver extends ProblemAttempt {
         gridWorldGenerator.setTf(tf);
         gridWorldGenerator.setRf(rf);
         return gridWorldGenerator;
-    }
-}
-
-class CustomGridWorldRewardFunction extends GridWorldRewardFunction {
-
-    public CustomGridWorldRewardFunction(int width, int height, double initializingReward) {
-        super(width, height, initializingReward);
-    }
-
-    @Override
-    public double reward(State s, Action a, State sprime) {
-        return super.reward(sprime, a, s);
     }
 }
