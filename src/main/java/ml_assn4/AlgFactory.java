@@ -1,7 +1,9 @@
 package ml_assn4;
 
 import burlap.behavior.policy.EpsilonGreedy;
+import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
@@ -17,7 +19,10 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import javafx.util.Pair;
+import ml_assn4.custom_algs.CustomValueIteration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 
@@ -38,16 +43,27 @@ public class AlgFactory {
         };
     }
 
+    public static double calcReward(Episode e){
+        double myRewards = 0;
+        //sum all rewards
+        for (int i = 0; i<e.rewardSequence.size(); i++) {
+            myRewards += e.rewardSequence.get(i);
+        }
+        return myRewards;
+    }
 
     public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getVIAlg(double gamma, double maxDelta, int maxIterations){
         return (domain, initialState) -> {
+            SADomain currentDomain = (SADomain) domain;
             // value iteration
             SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-            Planner valuePlanner = new ValueIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxIterations);
-            Policy valuePolicy = valuePlanner.planFromState(initialState);
-//        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
 
-            return new Pair<>((ValueFunction)valuePlanner, valuePolicy);
+            CustomValueIteration valuePlanner = new CustomValueIteration(currentDomain, gamma, hashingFactory, maxDelta, maxIterations);
+            valuePlanner.setMeasureState(initialState);
+            valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
+            GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
+
+            return new Pair<>(valuePlanner, valuePolicy);
         };
     }
 
@@ -55,11 +71,11 @@ public class AlgFactory {
         return (domain, initialState) -> {
             // policy iteration
             SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-            Planner policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
-            Policy policyPolicy = policyPlanner.planFromState(initialState);
+            PolicyIteration policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
+            GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
 //        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
 
-            return new Pair<>((ValueFunction)policyPlanner, policyPolicy);
+            return new Pair<>(policyPlanner, policyPolicy);
         };
     }
 
@@ -68,9 +84,9 @@ public class AlgFactory {
             // qlearning agent
 //            LearningAgentFactory qAgentFactory = AgentFactory.getQLearner(domain, .99, 0.3, 0.1); epsilon=0.1
             LearningAgentFactory qAgentFactory = AlgFactory.getQLearner(domain, gamma, qInit, learningRate);
-            LearningAgent qAgent = qAgentFactory.generateAgent();
-            Policy qPolicy = new EpsilonGreedy((QLearning)qAgent, epsilon);
-            ((QLearning) qAgent).setLearningPolicy(qPolicy);
+            QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
+            Policy qPolicy = new EpsilonGreedy(qAgent, epsilon);
+            qAgent.setLearningPolicy(qPolicy);
 
             //initial state generator
             final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);

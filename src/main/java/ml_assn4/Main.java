@@ -18,6 +18,9 @@ public class Main {
     public static void main(String[] args) {
         boolean showViz = false;
 
+        RandomFactory.seedDefault(SEED);
+        RandomFactory.seedMapped(0, SEED);
+
         if (args.length>0)
             showViz = args[0].equals("viz");
 
