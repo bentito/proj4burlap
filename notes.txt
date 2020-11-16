@@ -1,0 +1,12 @@
+plot metrics
+    convergence 
+    how algs scale with problem space
+    time to convergence
+
+    time vs iteration
+    time vs reward
+
+    
+
+    policy visual for gridworld
+        did each alg arrive at the same answer

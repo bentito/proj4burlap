@@ -3,7 +3,9 @@ package ml_assn4;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.cartpole.CartPoleDomain;
+import burlap.domain.singleagent.cartpole.InvertedPendulum;
 import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
+import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
@@ -26,13 +28,14 @@ public class CartPoleSolver extends ProblemAttempt {
     @Override
     protected void SetupExperiment() {
         super.SetupExperiment();
-        initialState = new CartPoleFullState();
+//        initialState = new CartPoleFullState();
+        initialState = new InvertedPendulumState();
     }
 
     @Override
     public void visualizeProblem() {
         super.visualizeProblem();
-        EnvVisualize.cartPole((SADomain) createDomain(), initialState);
+//        EnvVisualize.cartPole((SADomain) createDomain(), initialState);
     }
 
     @Override
@@ -50,17 +53,21 @@ public class CartPoleSolver extends ProblemAttempt {
 
     @Override
     DomainGenerator createDomainGenerator() {
-        CartPoleDomain cartPoleGenerator = new CartPoleDomain();
-        cartPoleGenerator.setToCorrectModel();
+//        CartPoleDomain cartPoleGenerator = new CartPoleDomain();
+        InvertedPendulum gen = new InvertedPendulum();
+
+//        cartPoleGenerator.setToCorrectModel();
 
         //ends when the agent reaches a location
-        TerminalFunction tf = new CartPoleDomain.CartPoleTerminalFunction();
+//        TerminalFunction tf = new CartPoleDomain.CartPoleTerminalFunction();
+        TerminalFunction tf = new InvertedPendulum.InvertedPendulumTerminalFunction();
 
         //reward function definition
-        RewardFunction rf = new CartPoleDomain.CartPoleRewardFunction();
+//        RewardFunction rf = new CartPoleDomain.CartPoleRewardFunction();
+        RewardFunction rf = new InvertedPendulum.InvertedPendulumRewardFunction();
 
-        cartPoleGenerator.setTf(tf);
-        cartPoleGenerator.setRf(rf);
-        return cartPoleGenerator;
+        gen.setTf(tf);
+        gen.setRf(rf);
+        return gen;
     }
 }

@@ -72,8 +72,8 @@ public class AlgFactory {
             // policy iteration
             SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
             PolicyIteration policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
+
             GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
-//        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
 
             return new Pair<>(policyPlanner, policyPolicy);
         };
