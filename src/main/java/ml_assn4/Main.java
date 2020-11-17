@@ -1,10 +1,9 @@
 package ml_assn4;
 
-import burlap.behavior.policy.Policy;
-import burlap.behavior.valuefunction.ValueFunction;
+import burlap.behavior.singleagent.learning.LearningAgentFactory;
+import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +25,24 @@ public class Main {
 
         List<ProblemAttempt> problemList = new ArrayList<>();
         problemList.add(new GridWorldSolver());
-        problemList.add(new ml_assn4.CartPoleSolver());
+//        problemList.add(new ml_assn4.CartPoleSolver());
+//
+//        List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algList = new ArrayList<>();
+//        algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
+//        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 100, 100));
+//        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1));
 
-        List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 100, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1));
+        GridWorldSolver s = new GridWorldSolver();
+        List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
+        learningAlgList.add(AlgFactory.getVILearner(0.99, 0.001));
+        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1));
 
         for (ProblemAttempt attempt : problemList) {
             if (showViz){
                 attempt.visualizeProblem();
             } else {
-                attempt.performExperiment(algList);
+                attempt.createLearningPlots(learningAlgList, 350);
+//                attempt.performExperiment(algList);
             }
         }
     }

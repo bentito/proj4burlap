@@ -12,7 +12,7 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 
 public class Plotter {
 
-    public static void plot(final SADomain domain, State initialState, LearningAgentFactory...agentFactory){
+    public static void plot(final SADomain domain, State initialState, int trialLength, LearningAgentFactory...agentFactory){
 
         //initial state generator
         final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
@@ -21,7 +21,7 @@ public class Plotter {
         SimulatedEnvironment env = new SimulatedEnvironment(domain, sg);
 
         //define experiment
-        LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 10, 2500, agentFactory);
+        LearningAlgorithmExperimenter exp = new LearningAlgorithmExperimenter(env, 10, trialLength, agentFactory);
 
         exp.setUpPlottingConfiguration(
                 500,
@@ -29,8 +29,12 @@ public class Plotter {
                 2,
                 1000,
                 TrialMode.MOST_RECENT_AND_AVERAGE,
+                PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE,
+                PerformanceMetric.AVERAGE_EPISODE_REWARD,
                 PerformanceMetric.CUMULATIVE_STEPS_PER_EPISODE,
-                PerformanceMetric.AVERAGE_EPISODE_REWARD
+                PerformanceMetric.STEPS_PER_EPISODE
+//                PerformanceMetric.MEDIAN_EPISODE_REWARD,
+//                PerformanceMetric.CUMULATIVE_REWARD_PER_STEP,
         );
 
         //start experiment

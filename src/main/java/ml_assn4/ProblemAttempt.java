@@ -6,6 +6,7 @@ import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 
 public abstract class ProblemAttempt {
 
+    State initialState;
     DomainGenerator domainGenerator;
     Boolean experimentSetup = false;
 
@@ -29,6 +31,18 @@ public abstract class ProblemAttempt {
         if(!this.experimentSetup){
             SetupExperiment();
         }
+    }
+
+    public void createLearningPlots(List<BiFunction<Domain, State, LearningAgentFactory>> plz, int trialLength){
+        this.SetupExperiment();
+        SADomain currentDomain = (SADomain) createDomain();
+
+        LearningAgentFactory[] f = new LearningAgentFactory[plz.size()];
+        for (int i = 0; i < plz.size(); i++) {
+            f[i] = plz.get(i).apply(currentDomain, initialState);
+        }
+
+        Plotter.plot(currentDomain, initialState, trialLength, f);
     }
 
     public void visualizeProblem(){

@@ -24,12 +24,24 @@ import ml_assn4.custom_algs.CustomValueIteration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 
 public class AlgFactory {
 
-    public static LearningAgentFactory getQLearner(Domain domain, final double gamma, final double qInit, final double learningRate){
-        return new LearningAgentFactory() {
+    public static double calcReward(Episode e){
+        double myRewards = 0;
+        //sum all rewards
+        for (int i = 0; i<e.rewardSequence.size(); i++) {
+            myRewards += e.rewardSequence.get(i);
+        }
+        return myRewards;
+    }
+
+    // region learning agents
+
+    public static BiFunction<Domain, State, LearningAgentFactory> getQLearner(double gamma, double qInit, double learningRate){
+        return (domain, initialState) -> new LearningAgentFactory() {
             //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
 
@@ -43,14 +55,26 @@ public class AlgFactory {
         };
     }
 
-    public static double calcReward(Episode e){
-        double myRewards = 0;
-        //sum all rewards
-        for (int i = 0; i<e.rewardSequence.size(); i++) {
-            myRewards += e.rewardSequence.get(i);
-        }
-        return myRewards;
+    public static BiFunction<Domain, State, LearningAgentFactory> getVILearner(double gamma, double maxDelta){
+        return (domain, initialState) -> new LearningAgentFactory() {
+            //set up the state hashing system for looking up states
+            final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+
+            public String getAgentName() {
+                return "Value Iteration";
+            }
+
+            public LearningAgent generateAgent() {
+                CustomValueIteration agent = new CustomValueIteration((SADomain)domain, gamma, hashingFactory, maxDelta);
+                agent.setInitialState(initialState);
+                return agent;
+            }
+        };
     }
+
+    // endregion learning agents
+
+    // region iterative algs
 
     public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getVIAlg(double gamma, double maxDelta, int maxIterations){
         return (domain, initialState) -> {
@@ -59,7 +83,6 @@ public class AlgFactory {
             SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
 
             CustomValueIteration valuePlanner = new CustomValueIteration(currentDomain, gamma, hashingFactory, maxDelta, maxIterations);
-            valuePlanner.setMeasureState(initialState);
             valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
             GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
 
@@ -81,9 +104,10 @@ public class AlgFactory {
 
     public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getQAlg(double gamma, double qInit, double learningRate, double epsilon){
         return (domain, initialState) -> {
+            SADomain currentDomain = (SADomain) domain;
             // qlearning agent
-//            LearningAgentFactory qAgentFactory = AgentFactory.getQLearner(domain, .99, 0.3, 0.1); epsilon=0.1
-            LearningAgentFactory qAgentFactory = AlgFactory.getQLearner(domain, gamma, qInit, learningRate);
+            BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate);
+            LearningAgentFactory qAgentFactory = qAgentGenerator.apply(currentDomain, initialState);
             QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
             Policy qPolicy = new EpsilonGreedy(qAgent, epsilon);
             qAgent.setLearningPolicy(qPolicy);
@@ -108,4 +132,6 @@ public class AlgFactory {
             return new Pair<>((ValueFunction)qAgent, qPolicy);
         };
     }
+
+    // endregion iterative algs
 }

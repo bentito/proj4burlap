@@ -1,6 +1,7 @@
 package ml_assn4;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
@@ -18,10 +19,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class GridWorldSolver extends ProblemAttempt {
 
-    State initialState;
     int w;
     int h;
 
@@ -99,7 +100,7 @@ public class GridWorldSolver extends ProblemAttempt {
         tf.markAsTerminalPosition(w-1, 0);
 
         GridWorldRewardFunction rf = new CustomGridWorldRewardFunction(w, h, -0.1);
-        rf.setReward(w-1, 0, 5.);
+        rf.setReward(w-1, 0, 15);
 
         gridWorldGenerator.setTf(tf);
         gridWorldGenerator.setRf(rf);
