@@ -17,6 +17,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.statehashing.discretized.DiscretizingHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import javafx.util.Pair;
 import ml_assn4.custom_algs.CustomValueIteration;
@@ -44,6 +45,7 @@ public class AlgFactory {
         return (domain, initialState) -> new LearningAgentFactory() {
             //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+//            final DiscretizingHashableStateFactory hashingFactory = new DiscretizingHashableStateFactory(1.);
 
             public String getAgentName() {
                 return "Q-learning";
@@ -59,6 +61,7 @@ public class AlgFactory {
         return (domain, initialState) -> new LearningAgentFactory() {
             //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+//            final DiscretizingHashableStateFactory hashingFactory = new DiscretizingHashableStateFactory(0.1);
 
             public String getAgentName() {
                 return "Value Iteration";

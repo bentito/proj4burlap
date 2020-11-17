@@ -5,6 +5,7 @@ import burlap.behavior.singleagent.auxiliary.performance.PerformanceMetric;
 import burlap.behavior.singleagent.auxiliary.performance.TrialMode;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
+import burlap.mdp.auxiliary.common.RandomStartStateGenerator;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
@@ -16,6 +17,7 @@ public class Plotter {
 
         //initial state generator
         final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
+//        final RandomStartStateGenerator sg = new RandomStartStateGenerator(domain, initialState);
 
         //define learning environment
         SimulatedEnvironment env = new SimulatedEnvironment(domain, sg);
