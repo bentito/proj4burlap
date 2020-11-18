@@ -35,11 +35,12 @@ public class Main {
 
         List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algList = new ArrayList<>();
         algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
-//        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 100, 100));
-//        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1));
+        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 100, 100));
+        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1));
 
         List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
         learningAlgList.add(AlgFactory.getVILearner(0.99, 0.001));
+        learningAlgList.add(AlgFactory.getPILearner(0.99, 0.001));
         learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1));
 
         for (ProblemAttempt attempt : problemList) {

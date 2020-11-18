@@ -50,8 +50,7 @@ public class CustomValueIteration extends ValueIteration implements LearningAgen
 
         Set<HashableState> states = valueFunction.keySet();
 
-        int i;
-        for(i = 0; i < maxSteps; i++){
+        for(int i = 0; i < maxSteps; i++){
             double delta = 0.;
             for(HashableState sh : states){
                 double v = this.value(sh);

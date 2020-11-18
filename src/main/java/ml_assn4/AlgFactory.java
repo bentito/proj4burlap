@@ -20,6 +20,7 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.statehashing.discretized.DiscretizingHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import javafx.util.Pair;
+import ml_assn4.custom_algs.CustomPolicyIteration;
 import ml_assn4.custom_algs.CustomValueIteration;
 
 import java.util.ArrayList;
@@ -69,6 +70,24 @@ public class AlgFactory {
 
             public LearningAgent generateAgent() {
                 CustomValueIteration agent = new CustomValueIteration((SADomain)domain, gamma, hashingFactory, maxDelta);
+                agent.setInitialState(initialState);
+                return agent;
+            }
+        };
+    }
+
+    public static BiFunction<Domain, State, LearningAgentFactory> getPILearner(double gamma, double maxDelta){
+        return (domain, initialState) -> new LearningAgentFactory() {
+            //set up the state hashing system for looking up states
+            final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+//            final DiscretizingHashableStateFactory hashingFactory = new DiscretizingHashableStateFactory(0.1);
+
+            public String getAgentName() {
+                return "Policy Iteration";
+            }
+
+            public LearningAgent generateAgent() {
+                CustomPolicyIteration agent = new CustomPolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta);
                 agent.setInitialState(initialState);
                 return agent;
             }
