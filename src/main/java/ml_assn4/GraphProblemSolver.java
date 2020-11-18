@@ -63,54 +63,25 @@ public class GraphProblemSolver extends ProblemAttempt {
         int goalState = 768;
 
         //ends when the agent reaches a location
-        TerminalFunction tf = new testTF(goalState);
+        TerminalFunction tf = s -> {
+            GraphStateNode currentNodeState = ((GraphStateNode)s);
+            int sid = currentNodeState.getId();
+            return sid == goalState;
+        };
 
         //reward function definition
-        RewardFunction rf = new testRF( goalState,500., -0.1);
+        RewardFunction rf = ((s, a, sprime) -> {
+            GraphStateNode currentNodeState = ((GraphStateNode)s);
+            int sid = currentNodeState.getId();
+
+            if(sid == goalState)
+                return 500;
+
+            return -0.1;
+        });
 
         graphDomain.setTf(tf);
         graphDomain.setRf(rf);
         return graphDomain;
-    }
-}
-
-class testTF implements TerminalFunction{
-
-    int goalStateId;
-
-    public testTF(int goalStateId) {
-        this.goalStateId = goalStateId;
-    }
-
-    @Override
-    public boolean isTerminal(State s) {
-        GraphStateNode currentNodeState = ((GraphStateNode)s);
-        int sid = currentNodeState.getId();
-        return sid == goalStateId;
-    }
-}
-
-class testRF implements RewardFunction{
-
-    double defaultReward;
-    double goalReward;
-    int goalStateId;
-
-    public testRF(int goalStateId, double goalReward, double defaultReward){
-        this.defaultReward = defaultReward;
-        this.goalReward = goalReward;
-        this.goalStateId = goalStateId;
-    }
-
-    @Override
-    public double reward(State s, Action a, State sprime) {
-
-        GraphStateNode currentNodeState = ((GraphStateNode)s);
-        int sid = currentNodeState.getId();
-
-        if(sid == goalStateId)
-            return goalReward;
-
-        return defaultReward;
     }
 }
