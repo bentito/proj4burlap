@@ -18,8 +18,6 @@ public class Main {
     public static int SEED = 5;
 
     public static void main(String[] args) {
-
-
         boolean showViz = false;
 
         RandomFactory.seedDefault(SEED);
@@ -29,9 +27,9 @@ public class Main {
         if (args.length>0)
             showViz = args[0].equals("viz");
 
-        List<ProblemAttempt> problemList = new ArrayList<>();
-//        problemList.add(new GridWorldSolver());
-        problemList.add(new GraphProblemSolver());
+        List<Pair<ProblemAttempt,Integer>> problemList = new ArrayList<>();
+        problemList.add(new Pair<>(new GridWorldSolver(), 1000));
+        problemList.add(new Pair<>(new GraphProblemSolver(), 500));
 
         List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algList = new ArrayList<>();
         algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
@@ -43,12 +41,12 @@ public class Main {
         learningAlgList.add(AlgFactory.getPILearner(0.99, 0.001));
         learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1));
 
-        for (ProblemAttempt attempt : problemList) {
+        for (Pair<ProblemAttempt,Integer> attempt : problemList) {
             if (showViz){
-                attempt.visualizeProblem();
+                attempt.getKey().visualizeProblem();
             } else {
-                attempt.createLearningPlots(learningAlgList, 1000);
-//                attempt.performExperiment(algList);
+                attempt.getKey().createLearningPlots(learningAlgList, attempt.getValue());
+//                attempt.getKey().performExperiment(algList);
             }
         }
     }

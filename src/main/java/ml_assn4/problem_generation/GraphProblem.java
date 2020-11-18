@@ -2,20 +2,15 @@ package ml_assn4.problem_generation;
 
 import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
 import ml_assn4.Main;
-import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
-import org.graphstream.algorithm.generator.Generator;
-import org.graphstream.algorithm.generator.RandomEuclideanGenerator;
-import org.graphstream.algorithm.generator.RandomGenerator;
+import org.graphstream.algorithm.generator.*;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import static java.lang.Thread.sleep;
 
 public class GraphProblem {
 
@@ -64,12 +59,30 @@ public class GraphProblem {
 
             @Override
             Generator getGraphGenerator() {
-                return new RandomGenerator(Main.SEED);
+                return new RandomGenerator(Main.SEED, true, true);
+            }
+        };
+    }
+
+    public static GraphProblemGenerator getGridraphGenerator(){
+        return new GraphProblemGenerator(){
+            @Override
+            String getGraphName() {
+                return  "grid";
+            }
+
+            @Override
+            Generator getGraphGenerator() {
+                return new GridGenerator(false, true, true, true);
             }
         };
     }
 
     public static Graph generateGraph(GraphProblemGenerator graphGenerator, int nodes){
+        return generateGraph(graphGenerator, nodes, false);
+    }
+
+    public static Graph generateGraph(GraphProblemGenerator graphGenerator, int nodes, Boolean removeRandomEdges){
         Graph graph = new SingleGraph(graphGenerator.getGraphName());
         Generator gen = graphGenerator.getGraphGenerator();
         gen.addSink(graph);
@@ -78,6 +91,18 @@ public class GraphProblem {
             gen.nextEvents();
         }
         gen.end();
+
+        if(removeRandomEdges){
+            Random rand = new Random(Main.SEED);
+            List<Edge> removeEdges = graph.edges().filter(edge -> rand.nextDouble() > 0.8).collect(Collectors.toList());
+
+            List<Edge> removeEdges2 = removeEdges.stream().filter(edge ->
+                    edge.getNode0().neighborNodes().count() > 1 && edge.getNode1().neighborNodes().count() > 1
+            ).collect(Collectors.toList());
+
+            removeEdges2.forEach(graph::removeEdge);
+        }
+
         return graph;
     }
 
@@ -167,10 +192,11 @@ public class GraphProblem {
         System.setProperty("org.graphstream.ui", "swing");
 
 //        GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
-        GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
-//        test graphGen = GraphProblem.getRandEuclideanGraphGenerator();
+//        GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
+//        GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
+        GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
 
-        Graph graph = GraphProblem.generateGraph(graphGen, 250);
+        Graph graph = GraphProblem.generateGraph(graphGen, 500);
 
         GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
 

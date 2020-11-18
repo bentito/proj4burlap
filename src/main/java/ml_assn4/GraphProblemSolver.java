@@ -52,19 +52,21 @@ public class GraphProblemSolver extends ProblemAttempt {
     @Override
     DomainGenerator createDomainGenerator() {
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
-        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
+//        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
+        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
+//        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
 //        test graphGen = GraphProblem.getRandGraphGenerator();
 
-        Graph graph = GraphProblem.generateGraph(graphGen, 300);
+        Graph graph = GraphProblem.generateGraph(graphGen, 800);
         GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
 
-        int goalState = 98;
+        int goalState = 768;
 
         //ends when the agent reaches a location
         TerminalFunction tf = new testTF(goalState);
 
         //reward function definition
-        RewardFunction rf = new testRF( goalState,50., -0.1);
+        RewardFunction rf = new testRF( goalState,500., -0.1);
 
         graphDomain.setTf(tf);
         graphDomain.setRf(rf);
