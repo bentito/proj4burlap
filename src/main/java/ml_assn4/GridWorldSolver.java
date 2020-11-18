@@ -1,7 +1,6 @@
 package ml_assn4;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldRewardFunction;
@@ -14,12 +13,11 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import javafx.util.Pair;
-import ml_assn4.maze_generation.Maze;
+import ml_assn4.problem_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class GridWorldSolver extends ProblemAttempt {
 

@@ -1,0 +1,183 @@
+package ml_assn4.problem_generation;
+
+import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
+import ml_assn4.Main;
+import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
+import org.graphstream.algorithm.generator.Generator;
+import org.graphstream.algorithm.generator.RandomEuclideanGenerator;
+import org.graphstream.algorithm.generator.RandomGenerator;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+import static java.lang.Thread.sleep;
+
+public class GraphProblem {
+
+    public static class GraphProblemGenerator {
+        String getGraphName(){ return "";}
+        Generator getGraphGenerator(){ return null;}
+    }
+
+    public static GraphProblemGenerator getDoroGraphGenerator(){
+        return new GraphProblemGenerator(){
+            @Override
+            String getGraphName() {
+                return  "Dorogovtsev mendes";
+            }
+
+            @Override
+            Generator getGraphGenerator() {
+                Random rand = new Random(Main.SEED);
+                return new DorogovtsevMendesGenerator(rand);
+            }
+        };
+    }
+
+    public static GraphProblemGenerator getRandEuclideanGraphGenerator(){
+        return new GraphProblemGenerator(){
+            @Override
+            String getGraphName() {
+                return  "random euclidean";
+            }
+
+            @Override
+            Generator getGraphGenerator() {
+                RandomEuclideanGenerator gen = new RandomEuclideanGenerator();
+                gen.setRandomSeed(Main.SEED);
+                return gen;
+            }
+        };
+    }
+
+    public static GraphProblemGenerator getRandGraphGenerator(){
+        return new GraphProblemGenerator(){
+            @Override
+            String getGraphName() {
+                return  "random";
+            }
+
+            @Override
+            Generator getGraphGenerator() {
+                return new RandomGenerator(Main.SEED);
+            }
+        };
+    }
+
+    public static Graph generateGraph(GraphProblemGenerator graphGenerator, int nodes){
+        Graph graph = new SingleGraph(graphGenerator.getGraphName());
+        Generator gen = graphGenerator.getGraphGenerator();
+        gen.addSink(graph);
+        gen.begin();
+        for(int i=0; i<nodes; i++) {
+            gen.nextEvents();
+        }
+        gen.end();
+        return graph;
+    }
+
+    public static GraphDefinedDomain graphToDomainGenerator(Graph g){
+        GraphDefinedDomain graphDomain = new GraphDefinedDomain();
+
+        g.nodes().forEach(currNode -> {
+            currNode.setAttribute("ui.label", currNode.getId());
+            currNode.edges().forEach(currEdge -> {
+                Node op = currEdge.getOpposite(currNode);
+
+                List<Node> neighbors = currNode.neighborNodes().collect(Collectors.toList());
+
+                double numLowProb = (double) neighbors.size()-1;
+                double probSucceed = .8;
+                double pAlt = (1.-probSucceed)/numLowProb;
+
+                double totalP = 0.;
+
+                for (Node neighborNode : neighbors) {
+                    // srcNode action destNode p
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(currNode.getId());
+                    builder.append(" ");
+                    builder.append(currEdge.getIndex());
+                    builder.append(" ");
+                    builder.append(neighborNode.getId());
+                    builder.append(" ");
+                    double localP;
+                    if(neighborNode.equals(op)){
+                        localP = probSucceed;
+                    }
+                    else
+                        localP = pAlt;
+
+                    builder.append(localP);
+                    totalP += localP;
+//                    System.out.println(builder.toString());
+
+                    graphDomain.setTransition(
+                            Integer.parseInt(currNode.getId()),
+                            currEdge.getIndex(),
+                            Integer.parseInt(neighborNode.getId()),
+                            localP
+                    );
+                }
+//                System.out.println(currNode.getId() + " total prob [" + totalP + "] " + (totalP == 1.) + "\n");
+            });
+
+        });
+
+        return graphDomain;
+    }
+
+    public static void iterStep(Graph g, String startNode) {
+
+        String styleSheet =
+                "node {" +
+                        "	fill-color: blue;" +
+                        "}" +
+                        "node.marked {" +
+                        "	fill-color: red;" +
+                        "}";
+
+        g.setAttribute("ui.stylesheet", styleSheet);
+
+        g.display(true);
+
+        // explore
+        Iterator<? extends Node> k = g.getNode(startNode).getDepthFirstIterator();
+
+        Node prev = k.next();
+        prev.setAttribute("ui.class", "marked");
+        try { Thread.sleep(1000); } catch (Exception ignored) {}
+
+        while (k.hasNext()) {
+            prev.removeAttribute("ui.class");
+            Node next = k.next();
+            next.setAttribute("ui.class", "marked");
+            try { Thread.sleep(1000); } catch (Exception ignored) {}
+            prev = next;
+        }
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        System.setProperty("org.graphstream.ui", "swing");
+
+//        GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
+        GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
+//        test graphGen = GraphProblem.getRandEuclideanGraphGenerator();
+
+        Graph graph = GraphProblem.generateGraph(graphGen, 250);
+
+        GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
+
+        System.out.println(graphDomain.invalidMDPReport());
+        System.out.println("valid: " + graphDomain.isValidMDPGraph());
+
+        iterStep(graph, "0");
+    }
+
+}

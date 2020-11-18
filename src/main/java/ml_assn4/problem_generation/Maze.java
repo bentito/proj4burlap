@@ -1,4 +1,4 @@
-package ml_assn4.maze_generation;
+package ml_assn4.problem_generation;
 
 import ml_assn4.Main;
 
