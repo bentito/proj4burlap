@@ -1,34 +1,47 @@
 package ml_assn4;
 
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.singleagent.Episode;
 import burlap.behavior.valuefunction.ValueFunction;
 import burlap.domain.singleagent.cartpole.InvertedPendulum;
 import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
 import burlap.domain.singleagent.graphdefined.GraphStateNode;
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
+import burlap.mdp.singleagent.SADomain;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import javafx.util.Pair;
 import ml_assn4.problem_generation.GraphProblem;
 import org.graphstream.graph.Graph;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class GraphProblemSolver extends ProblemAttempt {
 
-    public GraphProblemSolver() {
+    Graph currentGraph = null;
+    int goalState = 768;
+    int startState = 0;
+    int numNodes;
+
+    public GraphProblemSolver(int numNodes) {
         super();
+        this.numNodes = numNodes;
     }
 
     @Override
     protected void SetupExperiment() {
         super.SetupExperiment();
-        initialState = new GraphStateNode(0);
+        initialState = new GraphStateNode(startState);
     }
 
     @Override
@@ -39,28 +52,30 @@ public class GraphProblemSolver extends ProblemAttempt {
 
     public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts) {
         super.performExperiment(algAttempts);
-        Domain currentDomain = createDomain();
+        SADomain currentDomain = (SADomain)createDomain();
 
         for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
             Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
-            //do something with alg results
-        }
 
-//        Plotter.plot((SADomain)currentDomain, initialState, agentFactory.apply(currentDomain));
+            ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
+            Episode thisEp = PolicyUtils.rollout(p.getValue(), new SimulatedEnvironment(currentDomain, sg), 5000);
+
+            List<String> visitedNodes = thisEp.stateSequence.stream().map(Objects::toString).collect(Collectors.toList());
+
+            GraphProblem.visualizePolicy(this.currentGraph, visitedNodes, Integer.toString(startState), Integer.toString(goalState));
+        }
     }
 
     @Override
     DomainGenerator createDomainGenerator() {
+        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
-        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
 //        test graphGen = GraphProblem.getRandGraphGenerator();
 
-        Graph graph = GraphProblem.generateGraph(graphGen, 800);
-        GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
-
-        int goalState = 768;
+        this.currentGraph = GraphProblem.generateGraph(graphGen, this.numNodes, false);
+        GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(this.currentGraph);
 
         //ends when the agent reaches a location
         TerminalFunction tf = s -> {
@@ -75,7 +90,7 @@ public class GraphProblemSolver extends ProblemAttempt {
             int sid = currentNodeState.getId();
 
             if(sid == goalState)
-                return 500;
+                return 5;
 
             return -0.1;
         });

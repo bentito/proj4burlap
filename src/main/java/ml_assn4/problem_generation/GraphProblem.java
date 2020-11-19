@@ -14,6 +14,34 @@ import java.util.stream.Collectors;
 
 public class GraphProblem {
 
+    static String styleSheet =
+            "node {" +
+                "	fill-color: #2c2c2c;" +
+                    "	z-index: 1;" +
+                    "	text-mode: hidden;" +
+            "}" +
+            "edge {" +
+                "	fill-color: #A9A9A9;" +
+                    "	z-index: 0;" +
+            "}" +
+            "node.marked {" +
+                "	fill-color: red;" +
+                    "	z-index: 2;" +
+            "}" +
+            "edge.marked {" +
+                "	fill-color: red;" +
+                "	size: 2;" +
+                "	z-index: 2;" +
+            "}" +
+            "node.goal {" +
+                "	fill-color: green;" +
+                    "	z-index: 2;" +
+            "}" +
+            "node.start {" +
+                "	fill-color: blue;" +
+                    "	z-index: 2;" +
+            "}";
+
     public static class GraphProblemGenerator {
         String getGraphName(){ return "";}
         Generator getGraphGenerator(){ return null;}
@@ -159,14 +187,6 @@ public class GraphProblem {
 
     public static void iterStep(Graph g, String startNode) {
 
-        String styleSheet =
-                "node {" +
-                        "	fill-color: blue;" +
-                        "}" +
-                        "node.marked {" +
-                        "	fill-color: red;" +
-                        "}";
-
         g.setAttribute("ui.stylesheet", styleSheet);
 
         g.display(true);
@@ -187,8 +207,36 @@ public class GraphProblem {
         }
     }
 
+    public static void visualizePolicy(Graph g, List<String> visitedNodes, String startNode, String goalNode) {
+        g.setAttribute("ui.stylesheet", styleSheet);
+        g.display(true);
 
-    public static void main(String[] args) throws InterruptedException {
+        Iterator<String> visitedIterator = visitedNodes.iterator();
+
+        String prev = visitedIterator.next();
+
+        while (visitedIterator.hasNext()) {
+            Node prevN = g.getNode(prev);
+            prevN.setAttribute("ui.class", "marked");
+
+            String next = visitedIterator.next();
+            Edge currEdge = g.getEdge(String.format("%s-%s", prev, next));
+            if(currEdge == null){
+                currEdge = g.getEdge(String.format("%s-%s", next, prev));
+            }
+
+            currEdge.setAttribute("ui.class", "marked");
+
+            prev = next;
+        }
+        // color start/finish at end to ensure proper color
+        Node start = g.getNode(startNode);
+        Node goal = g.getNode(goalNode);
+        start.setAttribute("ui.class", "start");
+        goal.setAttribute("ui.class", "goal");
+    }
+
+    public static void main(String[] args) {
         System.setProperty("org.graphstream.ui", "swing");
 
 //        GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();

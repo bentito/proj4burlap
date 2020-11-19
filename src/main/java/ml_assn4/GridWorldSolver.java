@@ -64,7 +64,7 @@ public class GridWorldSolver extends ProblemAttempt {
 
         for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
             Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
-            ml_assn4.EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
+            EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
         }
 
 //        ml_assn4.Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
