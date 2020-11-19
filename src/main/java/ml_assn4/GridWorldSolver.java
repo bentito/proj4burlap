@@ -58,12 +58,15 @@ public class GridWorldSolver extends ProblemAttempt {
     }
 
     @Override
-    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts) {
+    public void performExperiment(List<AlgExperiment> algAttempts) {
         super.performExperiment(algAttempts);
         SADomain currentDomain = (SADomain) createDomain();
 
-        for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
-            Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
+        for (AlgExperiment algAttempt : algAttempts) {
+            this.startMeasureTime();
+            Pair<ValueFunction, Policy> p = algAttempt.getAlg(currentDomain, initialState);
+            this.finishMeasureTime(algAttempt.getAlgName());
+
             EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
         }
 

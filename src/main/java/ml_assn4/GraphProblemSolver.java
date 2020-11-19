@@ -50,12 +50,14 @@ public class GraphProblemSolver extends ProblemAttempt {
 //        EnvVisualize.cartPole((SADomain) createDomain(), initialState);
     }
 
-    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts) {
+    public void performExperiment(List<AlgExperiment>  algAttempts) {
         super.performExperiment(algAttempts);
         SADomain currentDomain = (SADomain)createDomain();
 
-        for (BiFunction<Domain, State, Pair<ValueFunction, Policy>> algAttempt : algAttempts) {
-            Pair<ValueFunction, Policy> p = algAttempt.apply(currentDomain, initialState);
+        for (AlgExperiment algAttempt : algAttempts) {
+            this.startMeasureTime();
+            Pair<ValueFunction, Policy> p = algAttempt.getAlg(currentDomain, initialState);
+            this.finishMeasureTime(algAttempt.getAlgName());
 
             ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
             Episode thisEp = PolicyUtils.rollout(p.getValue(), new SimulatedEnvironment(currentDomain, sg), 5000);

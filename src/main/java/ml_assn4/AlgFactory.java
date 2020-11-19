@@ -29,6 +29,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
+abstract class AlgExperiment{
+    abstract String getAlgName();
+    abstract Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState);
+}
+
+
 public class AlgFactory {
 
     public static double calcReward(Episode e){
@@ -98,60 +104,84 @@ public class AlgFactory {
 
     // region iterative algs
 
-    public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getVIAlg(double gamma, double maxDelta, int maxIterations){
-        return (domain, initialState) -> {
-            SADomain currentDomain = (SADomain) domain;
-            // value iteration
-            SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
 
-            CustomValueIteration valuePlanner = new CustomValueIteration(currentDomain, gamma, hashingFactory, maxDelta, maxIterations);
-            valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
-            GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
-
-            return new Pair<>(valuePlanner, valuePolicy);
-        };
-    }
-
-    public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getPIAlg(double gamma, double maxDelta, int maxEvalIterations, int maxPolicyIterations){
-        return (domain, initialState) -> {
-            // policy iteration
-            SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-            PolicyIteration policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
-
-            GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
-
-            return new Pair<>(policyPlanner, policyPolicy);
-        };
-    }
-
-    public static BiFunction<Domain, State, Pair<ValueFunction, Policy>> getQAlg(double gamma, double qInit, double learningRate, double epsilon){
-        return (domain, initialState) -> {
-            SADomain currentDomain = (SADomain) domain;
-            // qlearning agent
-            BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate);
-            LearningAgentFactory qAgentFactory = qAgentGenerator.apply(currentDomain, initialState);
-            QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
-            Policy qPolicy = new EpsilonGreedy(qAgent, epsilon);
-            qAgent.setLearningPolicy(qPolicy);
-
-            //initial state generator
-            final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
-
-            //define learning environment
-            SimulatedEnvironment env = new SimulatedEnvironment((SADomain) domain, sg);
-
-            //run learning for 50 episodes
-            for(int i = 0; i < 2500; i++){
-                Episode e = qAgent.runLearningEpisode(env);
-//            e.write(outputPath + "ql_" + i);
-//            System.out.println(i + ": " + e.maxTimeStep());
-                //reset environment for next learning episode
-                env.resetEnvironment();
+    public static AlgExperiment getVIAlg(double gamma, double maxDelta, int maxIterations){
+        return new AlgExperiment() {
+            @Override
+            String getAlgName() {
+                return "Value Iteration";
             }
 
-//        PolicyUtils.rollout(p, initialState, currentDomain.getModel()).write(outputPath + "vi");
+            @Override
+            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+                System.out.println("Value Iteration");
+                SADomain currentDomain = (SADomain) domain;
+                // value iteration
+                SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
 
-            return new Pair<>((ValueFunction)qAgent, qPolicy);
+                CustomValueIteration valuePlanner = new CustomValueIteration(currentDomain, gamma, hashingFactory, maxDelta, maxIterations);
+                valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
+                GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
+
+                return new Pair<>(valuePlanner, valuePolicy);
+            }
+        };
+    }
+
+    public static AlgExperiment getPIAlg(double gamma, double maxDelta, int maxEvalIterations, int maxPolicyIterations){
+        return new AlgExperiment() {
+            @Override
+            String getAlgName() {
+                return "Policy Iteration";
+            }
+
+            @Override
+            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+                System.out.println("Policy Iteration");
+                // policy iteration
+                SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
+                PolicyIteration policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
+
+                GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
+
+                return new Pair<>(policyPlanner, policyPolicy);
+            }
+        };
+    }
+
+    public static AlgExperiment getQAlg(double gamma, double qInit, double learningRate, double epsilon, int episodes){
+        return new AlgExperiment() {
+            @Override
+            String getAlgName() {
+                return "Q-Learning";
+            }
+
+            @Override
+            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+                System.out.println("Q-Learning");
+                SADomain currentDomain = (SADomain) domain;
+                // qlearning agent
+                BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate);
+                LearningAgentFactory qAgentFactory = qAgentGenerator.apply(currentDomain, initialState);
+                QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
+                Policy qPolicy = new EpsilonGreedy(qAgent, epsilon);
+                qAgent.setLearningPolicy(qPolicy);
+
+                //initial state generator
+                final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
+
+                //define learning environment
+                SimulatedEnvironment env = new SimulatedEnvironment((SADomain) domain, sg);
+
+                //run learning for 50 episodes
+                for(int i = 0; i < episodes; i++){
+                    Episode e = qAgent.runLearningEpisode(env);
+                    //reset environment for next learning episode
+                    env.resetEnvironment();
+                }
+
+                return new Pair<>(qAgent, qPolicy);
+            }
         };
     }
 

@@ -244,7 +244,7 @@ public class GraphProblem {
 //        GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
         GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
 
-        Graph graph = GraphProblem.generateGraph(graphGen, 500);
+        Graph graph = GraphProblem.generateGraph(graphGen, 800);
 
         GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
 

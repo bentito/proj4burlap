@@ -20,6 +20,8 @@ public abstract class ProblemAttempt {
     DomainGenerator domainGenerator;
     Boolean experimentSetup = false;
 
+    long startTime = 0;
+
     public ProblemAttempt() {}
 
     protected void SetupExperiment(){
@@ -27,10 +29,18 @@ public abstract class ProblemAttempt {
         this.domainGenerator = createDomainGenerator();
     }
 
-    public void performExperiment(List<BiFunction<Domain, State, Pair<ValueFunction, Policy>>> algAttempts){
+    public void performExperiment(List<AlgExperiment> algAttempts){
         if(!this.experimentSetup){
             SetupExperiment();
         }
+    }
+
+    protected void startMeasureTime(){
+        startTime = System.nanoTime();
+    }
+
+    protected void finishMeasureTime(String algName){
+        System.out.printf("%s Experiment Duration [%d]\n", algName, System.nanoTime() - startTime);
     }
 
     public void createLearningPlots(List<BiFunction<Domain, State, LearningAgentFactory>> plz, int trialLength){
