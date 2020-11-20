@@ -4,16 +4,11 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.domain.singleagent.cartpole.InvertedPendulum;
-import burlap.domain.singleagent.cartpole.states.InvertedPendulumState;
 import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
 import burlap.domain.singleagent.graphdefined.GraphStateNode;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.auxiliary.common.ConstantStateGenerator;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.action.Action;
-import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
@@ -23,7 +18,6 @@ import org.graphstream.graph.Graph;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class GraphProblemSolver extends ProblemAttempt {
@@ -56,7 +50,7 @@ public class GraphProblemSolver extends ProblemAttempt {
 
         for (AlgExperiment algAttempt : algAttempts) {
             this.startMeasureTime();
-            Pair<ValueFunction, Policy> p = algAttempt.getAlg(currentDomain, initialState);
+            Pair<ValueFunction, Policy> p = algAttempt.performExperiment(currentDomain, initialState);
             this.finishMeasureTime(algAttempt.getAlgName());
 
             ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
@@ -88,7 +82,7 @@ public class GraphProblemSolver extends ProblemAttempt {
 
         //reward function definition
         RewardFunction rf = ((s, a, sprime) -> {
-            GraphStateNode currentNodeState = ((GraphStateNode)s);
+            GraphStateNode currentNodeState = ((GraphStateNode)sprime);
             int sid = currentNodeState.getId();
 
             if(sid == goalState)

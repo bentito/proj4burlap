@@ -1,12 +1,9 @@
 package ml_assn4;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
-import burlap.behavior.valuefunction.ValueFunction;
 import burlap.debugtools.RandomFactory;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +18,14 @@ public class Main {
         ProblemAttempt problem = new GridWorldSolver();
 
         List<AlgExperiment> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 500, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1, 5000));
+        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
+        algList.add(AlgFactory.getPIAlg(0.99, 1, 500, 100));
+        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.09));
 
         List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
-        learningAlgList.add(AlgFactory.getVILearner(0.99, 0.001));
-        learningAlgList.add(AlgFactory.getPILearner(0.99, 0.001));
-        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1));
+        learningAlgList.add(AlgFactory.getVILearner(0.99, 1));
+        learningAlgList.add(AlgFactory.getPILearner(0.99, 1));
+        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1, 0.09));
 
         problem.createLearningPlots(learningAlgList, 400);
         problem.performExperiment(algList);
@@ -40,7 +37,7 @@ public class Main {
         List<AlgExperiment> algList = new ArrayList<>();
         algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
         algList.add(AlgFactory.getPIAlg(0.99, 0.001, 1000, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.1, 60000));
+        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.004));
 
         List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
         learningAlgList.add(AlgFactory.getVILearner(0.99, 0.001));

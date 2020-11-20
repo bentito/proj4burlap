@@ -1,37 +1,28 @@
 package ml_assn4;
 
-import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
-import burlap.behavior.singleagent.planning.stochastic.valueiteration.ValueIteration;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.mdp.auxiliary.common.ConstantStateGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import burlap.mdp.singleagent.environment.SimulatedEnvironment;
-import burlap.statehashing.discretized.DiscretizingHashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import javafx.util.Pair;
 import ml_assn4.custom_algs.CustomPolicyIteration;
+import ml_assn4.custom_algs.CustomQLearning;
 import ml_assn4.custom_algs.CustomValueIteration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 
 abstract class AlgExperiment{
     abstract String getAlgName();
-    abstract Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState);
+    abstract Pair<ValueFunction, Policy> performExperiment(Domain domain, State initialState);
 }
 
 
@@ -48,7 +39,7 @@ public class AlgFactory {
 
     // region learning agents
 
-    public static BiFunction<Domain, State, LearningAgentFactory> getQLearner(double gamma, double qInit, double learningRate){
+    public static BiFunction<Domain, State, LearningAgentFactory> getQLearner(double gamma, double qInit, double learningRate, double maxDelta){
         return (domain, initialState) -> new LearningAgentFactory() {
             //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
@@ -59,7 +50,10 @@ public class AlgFactory {
             }
 
             public LearningAgent generateAgent() {
-                return new QLearning((SADomain) domain, gamma, hashingFactory, qInit, learningRate);
+                QLearning agent = new CustomQLearning((SADomain) domain, gamma, hashingFactory, qInit, learningRate);
+                agent.setMaxQChangeForPlanningTerminaiton(maxDelta);
+                agent.initializeForPlanning((int)Double.POSITIVE_INFINITY);
+                return agent;
             }
         };
     }
@@ -113,7 +107,7 @@ public class AlgFactory {
             }
 
             @Override
-            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+            Pair<ValueFunction, Policy> performExperiment(Domain domain, State initialState) {
                 System.out.println("Value Iteration");
                 SADomain currentDomain = (SADomain) domain;
                 // value iteration
@@ -136,7 +130,7 @@ public class AlgFactory {
             }
 
             @Override
-            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+            Pair<ValueFunction, Policy> performExperiment(Domain domain, State initialState) {
                 System.out.println("Policy Iteration");
                 // policy iteration
                 SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
@@ -149,7 +143,7 @@ public class AlgFactory {
         };
     }
 
-    public static AlgExperiment getQAlg(double gamma, double qInit, double learningRate, double epsilon, int episodes){
+    public static AlgExperiment getQAlg(double gamma, double qInit, double learningRate, double maxDelta){
         return new AlgExperiment() {
             @Override
             String getAlgName() {
@@ -157,28 +151,15 @@ public class AlgFactory {
             }
 
             @Override
-            Pair<ValueFunction, Policy> getAlg(Domain domain, State initialState) {
+            Pair<ValueFunction, Policy> performExperiment(Domain domain, State initialState) {
                 System.out.println("Q-Learning");
                 SADomain currentDomain = (SADomain) domain;
                 // qlearning agent
-                BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate);
+                BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate, maxDelta);
                 LearningAgentFactory qAgentFactory = qAgentGenerator.apply(currentDomain, initialState);
                 QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
-                Policy qPolicy = new EpsilonGreedy(qAgent, epsilon);
-                qAgent.setLearningPolicy(qPolicy);
 
-                //initial state generator
-                final ConstantStateGenerator sg = new ConstantStateGenerator(initialState);
-
-                //define learning environment
-                SimulatedEnvironment env = new SimulatedEnvironment((SADomain) domain, sg);
-
-                //run learning for 50 episodes
-                for(int i = 0; i < episodes; i++){
-                    Episode e = qAgent.runLearningEpisode(env);
-                    //reset environment for next learning episode
-                    env.resetEnvironment();
-                }
+                Policy qPolicy = qAgent.planFromState(initialState);
 
                 return new Pair<>(qAgent, qPolicy);
             }

@@ -4,9 +4,6 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
 import burlap.behavior.singleagent.auxiliary.valuefunctionvis.ValueFunctionVisualizerGUI;
 import burlap.behavior.valuefunction.ValueFunction;
-import burlap.domain.singleagent.cartpole.CartPoleDomain;
-import burlap.domain.singleagent.cartpole.CartPoleVisualizer;
-import burlap.domain.singleagent.cartpole.states.CartPoleFullState;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.mdp.core.state.State;
@@ -39,13 +36,5 @@ public class EnvVisualize {
         ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(allStates, width, height, valueFunction, p);
         gui.initGUI();
 
-    }
-
-    public static void cartPole(SADomain domain, State initialState){
-        VisualExplorer exp = new VisualExplorer(domain, CartPoleVisualizer.getCartPoleVisualizer(), initialState);
-        exp.addKeyAction("a", CartPoleDomain.ACTION_LEFT, "");
-        exp.addKeyAction("d", CartPoleDomain.ACTION_RIGHT, "");
-
-        exp.initGUI();
     }
 }

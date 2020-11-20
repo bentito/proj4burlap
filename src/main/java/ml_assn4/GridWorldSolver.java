@@ -8,7 +8,6 @@ import burlap.domain.singleagent.gridworld.GridWorldTerminalFunction;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
 import burlap.domain.singleagent.gridworld.state.GridWorldState;
 import burlap.mdp.auxiliary.DomainGenerator;
-import burlap.mdp.core.Domain;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
@@ -17,7 +16,6 @@ import ml_assn4.problem_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 public class GridWorldSolver extends ProblemAttempt {
 
@@ -64,7 +62,7 @@ public class GridWorldSolver extends ProblemAttempt {
 
         for (AlgExperiment algAttempt : algAttempts) {
             this.startMeasureTime();
-            Pair<ValueFunction, Policy> p = algAttempt.getAlg(currentDomain, initialState);
+            Pair<ValueFunction, Policy> p = algAttempt.performExperiment(currentDomain, initialState);
             this.finishMeasureTime(algAttempt.getAlgName());
 
             EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
