@@ -62,7 +62,7 @@ public class AlgFactory {
         };
     }
 
-    public static BiFunction<Domain, State, LearningAgentFactory> getPILearner(double gamma, double maxDelta){
+    public static BiFunction<Domain, State, LearningAgentFactory> getPILearner(double gamma, double maxDelta, int maxIter){
         return (domain, initialState) -> new LearningAgentFactory() {
             //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
@@ -73,7 +73,7 @@ public class AlgFactory {
             }
 
             public LearningAgent generateAgent() {
-                CustomPolicyIteration agent = new CustomPolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta);
+                CustomPolicyIteration agent = new CustomPolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxIter, maxIter);
                 agent.setInitialState(initialState);
                 return agent;
             }

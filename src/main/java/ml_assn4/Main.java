@@ -22,7 +22,7 @@ public class Main {
         problem.createLearningPlots(
                 vipiPlotLength,
                 AlgFactory.getVILearner(0.99, 1),
-                AlgFactory.getPILearner(0.99, 1)
+                AlgFactory.getPILearner(0.99, 1, 1000)
         );
         problem.createLearningPlots(
                 qPlotLength,
