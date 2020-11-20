@@ -4,7 +4,6 @@ import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
-import burlap.behavior.singleagent.planning.Planner;
 import burlap.behavior.singleagent.planning.stochastic.policyiteration.PolicyIteration;
 import burlap.debugtools.DPrint;
 import burlap.mdp.core.state.State;
@@ -17,14 +16,9 @@ import java.util.Set;
 
 public class CustomPolicyIteration extends PolicyIteration implements LearningAgent {
     State initialState;
-    boolean hasConverged = false;
-
+    
     public CustomPolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta) {
         super(domain, gamma, hashingFactory, maxDelta, 0, 0);
-    }
-
-    public CustomPolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxPIDelta, double maxEvalDelta, int maxEvaluationIterations, int maxPolicyIterations) {
-        super(domain, gamma, hashingFactory, maxPIDelta, maxEvalDelta, maxEvaluationIterations, maxPolicyIterations);
     }
 
     public void setInitialState(State initialState){
@@ -38,9 +32,6 @@ public class CustomPolicyIteration extends PolicyIteration implements LearningAg
 
     @Override
     public Episode runLearningEpisode(Environment env, int maxSteps) {
-        if(hasConverged){
-            return constructEpisode(env);
-        }
 
         if(this.performReachabilityFrom(initialState)){
             DPrint.cl(this.debugCode, "reachability found");
@@ -56,10 +47,6 @@ public class CustomPolicyIteration extends PolicyIteration implements LearningAg
                 double maxQ = this.performFixedPolicyBellmanUpdateOn(sh, this.evaluativePolicy);
                 delta = Math.max(Math.abs(maxQ - v), delta);
 
-            }
-
-            if(delta < this.maxEvalDelta){
-                hasConverged = true;
             }
         }
 

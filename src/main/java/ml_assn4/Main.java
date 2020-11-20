@@ -35,16 +35,16 @@ public class Main {
         ProblemAttempt problem = new GraphProblemSolver(1500);
 
         List<AlgExperiment> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 0.001, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 0.001, 1000, 100));
+        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
+        algList.add(AlgFactory.getPIAlg(0.99, 1, 1000, 100));
         algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.004));
 
         List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
-        learningAlgList.add(AlgFactory.getVILearner(0.99, 0.001));
-        learningAlgList.add(AlgFactory.getPILearner(0.99, 0.001));
-        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1));
+        learningAlgList.add(AlgFactory.getVILearner(0.99, 1));
+        learningAlgList.add(AlgFactory.getPILearner(0.99, 1));
+        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1, 0.004));
 
-        problem.createLearningPlots(learningAlgList, 1000);
+        problem.createLearningPlots(learningAlgList, 1500);
         problem.performExperiment(algList);
     }
 

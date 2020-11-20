@@ -30,7 +30,6 @@ public class CustomQLearning extends QLearning {
             if(maxQChangeInLastEpisode < minQObserved){
                 minQObserved = maxQChangeInLastEpisode;
             }
-            
         }while(eCount < numEpisodesForPlanning && maxQChangeInLastEpisode > maxQChangeForPlanningTermination);
 
         return new GreedyQPolicy(this);

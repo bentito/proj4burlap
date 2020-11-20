@@ -9,18 +9,13 @@ import burlap.debugtools.DPrint;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
-import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.statehashing.HashableState;
 import burlap.statehashing.HashableStateFactory;
-import ml_assn4.AlgFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class CustomValueIteration extends ValueIteration implements LearningAgent {
     State initialState;
-    boolean hasConverged = false;
 
     public CustomValueIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxIterations) {
         super(domain, gamma, hashingFactory, maxDelta, maxIterations);
@@ -41,9 +36,7 @@ public class CustomValueIteration extends ValueIteration implements LearningAgen
 
     @Override
     public Episode runLearningEpisode(Environment env, int maxSteps) {
-        if(hasConverged){
-            return constructEpisode(env);
-        }
+
         if(this.performReachabilityFrom(initialState)){
             DPrint.cl(this.debugCode, "reachability found");
         }
@@ -58,15 +51,13 @@ public class CustomValueIteration extends ValueIteration implements LearningAgen
                 delta = Math.max(Math.abs(maxQ - v), delta);
             }
 
-            if(delta < this.maxDelta){
-                hasConverged = true;
-            }
         }
         return constructEpisode(env);
     }
 
     private Episode constructEpisode(Environment env){
         GreedyQPolicy valuePolicy = new GreedyQPolicy(this);
-        return PolicyUtils.rollout(valuePolicy, env, 5000);
+        Episode e = PolicyUtils.rollout(valuePolicy, env, 5000);
+        return e;
     }
 }
