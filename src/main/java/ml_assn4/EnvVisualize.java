@@ -35,12 +35,12 @@ public class EnvVisualize {
         exp.initGUI();
     }
 
-    public static void gridWorldPolicy(SADomain domain, State initialState, ValueFunction valueFunction, Policy p, int width, int height){
+    public static void gridWorldPolicy(SADomain domain, State initialState, ValueFunction valueFunction, Policy p, int width, int height, String algName){
         SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
         List<State> allStates = StateReachability.getReachableStates(initialState, domain, hashingFactory);
         ValueFunctionVisualizerGUI gui = GridWorldDomain.getGridWorldValueFunctionVisualization(allStates, width, height, valueFunction, p);
         gui.initGUI();
-
+        gui.setTitle(algName);
     }
 
     public static void graphPolicy(Graph g, List<String> visitedNodes, String startNode, String goalNode) {

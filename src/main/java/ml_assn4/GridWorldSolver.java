@@ -65,10 +65,8 @@ public class GridWorldSolver extends ProblemAttempt {
             Pair<ValueFunction, Policy> p = algAttempt.performExperiment(currentDomain, initialState);
             this.finishMeasureTime(algAttempt.getAlgName());
 
-            EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h);
+            EnvVisualize.gridWorldPolicy(currentDomain, initialState, p.getKey(), p.getValue(), w, h, algAttempt.getAlgName());
         }
-
-//        ml_assn4.Plotter.plot(currentDomain, initialState, agentFactory.apply(currentDomain));
     }
 
     @Override

@@ -12,8 +12,9 @@ public class Main {
 
     private static void executeProblem(ProblemAttempt problem, double qMaxDelta, int vipiPlotLength, int qPlotLength){
         List<AlgExperiment> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 1, 1000, 100));
+        //comment one at a time to screenshot each alg display (default graph viewer reuses same window so paths overlap)
+        algList.add(AlgFactory.getVIAlg(0.99, 0.9, 1000));
+        algList.add(AlgFactory.getPIAlg(0.99, 0.9, 1000, 100));
         algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, qMaxDelta));
 
         problem.performExperiment(algList);
@@ -36,7 +37,7 @@ public class Main {
     }
 
     public static void problem2(){
-        ProblemAttempt problem = new GraphProblemSolver(1500);
+        ProblemAttempt problem = new GraphProblemSolver(1000);
 
         executeProblem(problem, 0.004, 12, 1500);
     }
