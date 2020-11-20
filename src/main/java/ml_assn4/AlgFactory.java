@@ -2,7 +2,6 @@ package ml_assn4;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.Policy;
-import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.LearningAgent;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.behavior.singleagent.learning.tdmethods.QLearning;
@@ -28,22 +27,11 @@ abstract class AlgExperiment{
 
 public class AlgFactory {
 
-    public static double calcReward(Episode e){
-        double myRewards = 0;
-        //sum all rewards
-        for (int i = 0; i<e.rewardSequence.size(); i++) {
-            myRewards += e.rewardSequence.get(i);
-        }
-        return myRewards;
-    }
-
     // region learning agents
 
     public static BiFunction<Domain, State, LearningAgentFactory> getQLearner(double gamma, double qInit, double learningRate, double maxDelta){
         return (domain, initialState) -> new LearningAgentFactory() {
-            //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-//            final DiscretizingHashableStateFactory hashingFactory = new DiscretizingHashableStateFactory(1.);
 
             public String getAgentName() {
                 return "Q-learning";
@@ -60,9 +48,7 @@ public class AlgFactory {
 
     public static BiFunction<Domain, State, LearningAgentFactory> getVILearner(double gamma, double maxDelta){
         return (domain, initialState) -> new LearningAgentFactory() {
-            //set up the state hashing system for looking up states
             final SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-//            final DiscretizingHashableStateFactory hashingFactory = new DiscretizingHashableStateFactory(0.1);
 
             public String getAgentName() {
                 return "Value Iteration";
@@ -134,7 +120,7 @@ public class AlgFactory {
                 System.out.println("Policy Iteration");
                 // policy iteration
                 SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
-                PolicyIteration policyPlanner = new PolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
+                PolicyIteration policyPlanner = new CustomPolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
 
                 GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
 
@@ -154,7 +140,7 @@ public class AlgFactory {
             Pair<ValueFunction, Policy> performExperiment(Domain domain, State initialState) {
                 System.out.println("Q-Learning");
                 SADomain currentDomain = (SADomain) domain;
-                // qlearning agent
+
                 BiFunction<Domain, State, LearningAgentFactory> qAgentGenerator = AlgFactory.getQLearner(gamma, qInit, learningRate, maxDelta);
                 LearningAgentFactory qAgentFactory = qAgentGenerator.apply(currentDomain, initialState);
                 QLearning qAgent = (QLearning) qAgentFactory.generateAgent();

@@ -16,7 +16,11 @@ import java.util.Set;
 
 public class CustomPolicyIteration extends PolicyIteration implements LearningAgent {
     State initialState;
-    
+
+    public CustomPolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta, int maxEvaluationIterations, int maxPolicyIterations) {
+        super(domain, gamma, hashingFactory, maxDelta, maxEvaluationIterations, maxPolicyIterations);
+    }
+
     public CustomPolicyIteration(SADomain domain, double gamma, HashableStateFactory hashingFactory, double maxDelta) {
         super(domain, gamma, hashingFactory, maxDelta, 0, 0);
     }
