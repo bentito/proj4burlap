@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class GraphProblem {
 
-    static String styleSheet =
+    public static String styleSheet =
             "node {" +
                 "	fill-color: #2c2c2c;" +
                     "	z-index: 1;" +
@@ -205,35 +205,6 @@ public class GraphProblem {
             try { Thread.sleep(1000); } catch (Exception ignored) {}
             prev = next;
         }
-    }
-
-    public static void visualizePolicy(Graph g, List<String> visitedNodes, String startNode, String goalNode) {
-        g.setAttribute("ui.stylesheet", styleSheet);
-        g.display(true);
-
-        Iterator<String> visitedIterator = visitedNodes.iterator();
-
-        String prev = visitedIterator.next();
-
-        while (visitedIterator.hasNext()) {
-            Node prevN = g.getNode(prev);
-            prevN.setAttribute("ui.class", "marked");
-
-            String next = visitedIterator.next();
-            Edge currEdge = g.getEdge(String.format("%s-%s", prev, next));
-            if(currEdge == null){
-                currEdge = g.getEdge(String.format("%s-%s", next, prev));
-            }
-
-            currEdge.setAttribute("ui.class", "marked");
-
-            prev = next;
-        }
-        // color start/finish at end to ensure proper color
-        Node start = g.getNode(startNode);
-        Node goal = g.getNode(goalNode);
-        start.setAttribute("ui.class", "start");
-        goal.setAttribute("ui.class", "goal");
     }
 
     public static void main(String[] args) {

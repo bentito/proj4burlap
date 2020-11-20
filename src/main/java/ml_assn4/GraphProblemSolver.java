@@ -58,7 +58,7 @@ public class GraphProblemSolver extends ProblemAttempt {
 
             List<String> visitedNodes = thisEp.stateSequence.stream().map(Objects::toString).collect(Collectors.toList());
 
-            GraphProblem.visualizePolicy(this.currentGraph, visitedNodes, Integer.toString(startState), Integer.toString(goalState));
+            EnvVisualize.graphPolicy(this.currentGraph, visitedNodes, Integer.toString(startState), Integer.toString(goalState));
         }
     }
 
