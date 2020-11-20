@@ -1,62 +1,51 @@
 package ml_assn4;
 
-import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.debugtools.RandomFactory;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.state.State;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 
 
 public class Main {
 
     public static int SEED = 5;
 
+    private static void executeProblem(ProblemAttempt problem, double qMaxDelta, int vipiPlotLength, int qPlotLength){
+        List<AlgExperiment> algList = new ArrayList<>();
+        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
+        algList.add(AlgFactory.getPIAlg(0.99, 1, 1000, 100));
+        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, qMaxDelta));
+
+        problem.performExperiment(algList);
+
+        problem.createLearningPlots(
+                vipiPlotLength,
+                AlgFactory.getVILearner(0.99, 1),
+                AlgFactory.getPILearner(0.99, 1)
+        );
+        problem.createLearningPlots(
+                qPlotLength,
+                AlgFactory.getQLearner(0.99, 0.3, 0.1, qMaxDelta)
+        );
+    }
+
     public static void problem1(){
         ProblemAttempt problem = new GridWorldSolver();
 
-        List<AlgExperiment> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 1, 500, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.09));
-
-        List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
-        learningAlgList.add(AlgFactory.getVILearner(0.99, 1));
-        learningAlgList.add(AlgFactory.getPILearner(0.99, 1));
-        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1, 0.09));
-
-        problem.createLearningPlots(learningAlgList, 400);
-        problem.performExperiment(algList);
+        executeProblem(problem, 0.09, 50, 400);
     }
 
     public static void problem2(){
         ProblemAttempt problem = new GraphProblemSolver(1500);
 
-        List<AlgExperiment> algList = new ArrayList<>();
-        algList.add(AlgFactory.getVIAlg(0.99, 1, 100));
-        algList.add(AlgFactory.getPIAlg(0.99, 1, 1000, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, 0.004));
-
-        List<BiFunction<Domain, State, LearningAgentFactory>> learningAlgList = new ArrayList<>();
-        learningAlgList.add(AlgFactory.getVILearner(0.99, 1));
-        learningAlgList.add(AlgFactory.getPILearner(0.99, 1));
-        learningAlgList.add(AlgFactory.getQLearner(0.99, 0.3, 0.1, 0.004));
-
-        problem.createLearningPlots(learningAlgList, 1500);
-        problem.performExperiment(algList);
+        executeProblem(problem, 0.004, 12, 1500);
     }
 
     public static void main(String[] args) {
-//        boolean showViz = false;
 
         RandomFactory.seedDefault(SEED);
         RandomFactory.seedMapped(0, SEED);
         System.setProperty("org.graphstream.ui", "swing");
-
-//        if (args.length>0)
-//            showViz = args[0].equals("viz");
 
         problem1();
         problem2();

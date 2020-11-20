@@ -1,17 +1,13 @@
 package ml_assn4;
 
-import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
-import burlap.behavior.valuefunction.ValueFunction;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import javafx.util.Pair;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 
 public abstract class ProblemAttempt {
@@ -43,13 +39,14 @@ public abstract class ProblemAttempt {
         System.out.printf("%s Experiment Duration [%d]\n", algName, System.nanoTime() - startTime);
     }
 
-    public void createLearningPlots(List<BiFunction<Domain, State, LearningAgentFactory>> plz, int trialLength){
+    @SafeVarargs
+    public final void createLearningPlots(int trialLength, BiFunction<Domain, State, LearningAgentFactory>... agentFactoryCreators){
         this.SetupExperiment();
         SADomain currentDomain = (SADomain) createDomain();
 
-        LearningAgentFactory[] f = new LearningAgentFactory[plz.size()];
-        for (int i = 0; i < plz.size(); i++) {
-            f[i] = plz.get(i).apply(currentDomain, initialState);
+        LearningAgentFactory[] f = new LearningAgentFactory[agentFactoryCreators.length];
+        for (int i = 0; i < agentFactoryCreators.length; i++) {
+            f[i] = agentFactoryCreators[i].apply(currentDomain, initialState);
         }
 
         Plotter.plot(currentDomain, initialState, trialLength, f);
