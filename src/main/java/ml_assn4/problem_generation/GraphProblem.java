@@ -19,6 +19,7 @@ public class GraphProblem {
                 "	fill-color: #2c2c2c;" +
                     "	z-index: 1;" +
                     "	text-mode: hidden;" +
+                    "	size: 5;" +
             "}" +
             "edge {" +
                 "	fill-color: #A9A9A9;" +
@@ -210,12 +211,12 @@ public class GraphProblem {
     public static void main(String[] args) {
         System.setProperty("org.graphstream.ui", "swing");
 
-//        GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
+        GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
 //        GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
 //        GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
-        GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
+//        GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
 
-        Graph graph = GraphProblem.generateGraph(graphGen, 800);
+        Graph graph = GraphProblem.generateGraph(graphGen, 2000);
 
         GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
 

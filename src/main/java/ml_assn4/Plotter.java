@@ -28,7 +28,7 @@ public class Plotter {
                 500,
                 250,
                 2,
-                1000,
+                650,
                 TrialMode.MOST_RECENT_AND_AVERAGE,
                 PerformanceMetric.CUMULATIVE_REWARD_PER_EPISODE,
                 PerformanceMetric.AVERAGE_EPISODE_REWARD,

@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class GraphProblemSolver extends ProblemAttempt {
 
     Graph currentGraph = null;
-    int goalState = 768;
-    int startState = 0;
+    int goalState = 776;
+    int startState = 1435;
     int numNodes;
 
     public GraphProblemSolver(int numNodes) {
@@ -64,8 +64,8 @@ public class GraphProblemSolver extends ProblemAttempt {
 
     @Override
     DomainGenerator createDomainGenerator() {
-        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
-//        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
+//        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandEuclideanGraphGenerator();
+        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getDoroGraphGenerator();
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getRandGraphGenerator();
 //        GraphProblem.GraphProblemGenerator graphGen = GraphProblem.getGridraphGenerator();
 //        test graphGen = GraphProblem.getRandGraphGenerator();

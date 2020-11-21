@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Main {
 
-    public static int SEED = 5;
+    public static int SEED = 7;
 
     private static void executeProblem(ProblemAttempt problem, double qMaxDelta, int vipiPlotLength, int qPlotLength){
         List<AlgExperiment> algList = new ArrayList<>();
@@ -37,9 +37,9 @@ public class Main {
     }
 
     public static void problem2(){
-        ProblemAttempt problem = new GraphProblemSolver(1000);
+        ProblemAttempt problem = new GraphProblemSolver(2000);
 
-        executeProblem(problem, 0.004, 12, 1500);
+        executeProblem(problem, 0.06, 12, 250);
     }
 
     public static void main(String[] args) {
