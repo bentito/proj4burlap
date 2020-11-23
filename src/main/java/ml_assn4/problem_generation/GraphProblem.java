@@ -218,10 +218,33 @@ public class GraphProblem {
 
         Graph graph = GraphProblem.generateGraph(graphGen, 2000);
 
+        System.out.printf("%d states and %d edges\n", graph.nodes().count(), graph.edges().count());
+
         GraphDefinedDomain graphDomain = GraphProblem.graphToDomainGenerator(graph);
 
         System.out.println(graphDomain.invalidMDPReport());
         System.out.println("valid: " + graphDomain.isValidMDPGraph());
+
+        String goalState = "776";
+        String startState = "1435";
+        Node start = graph.getNode(startState);
+        Node goal = graph.getNode(goalState);
+        start.setAttribute("ui.class", "start");
+        goal.setAttribute("ui.class", "goal");
+
+//        Iterator<Node> nodes = graph.nodes().iterator();
+        double maxCnn = Double.NEGATIVE_INFINITY;
+        double minCnn = Double.POSITIVE_INFINITY;
+        for (Node n: graph.nodes().collect(Collectors.toList())) {
+            long cnn = n.edges().count();
+            if(cnn < minCnn){
+                minCnn = cnn;
+            }
+            if(cnn > maxCnn){
+                maxCnn = cnn;
+            }
+        }
+        System.out.printf("graph minConn [%f] maxConn [%f] \n", minCnn, maxCnn);
 
         iterStep(graph, "0");
     }
