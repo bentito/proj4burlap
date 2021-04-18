@@ -11,10 +11,11 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
-import javafx.util.Pair;
+
 import ml_assn4.custom_algs.CustomPolicyIteration;
 import ml_assn4.custom_algs.CustomQLearning;
 import ml_assn4.custom_algs.CustomValueIteration;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.BiFunction;
 
@@ -103,7 +104,7 @@ public class AlgFactory {
                 valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
                 GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
 
-                return new Pair<>(valuePlanner, valuePolicy);
+                return Pair.of(valuePlanner, valuePolicy);
             }
         };
     }
@@ -124,7 +125,7 @@ public class AlgFactory {
 
                 GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
 
-                return new Pair<>(policyPlanner, policyPolicy);
+                return Pair.of(policyPlanner, policyPolicy);
             }
         };
     }
@@ -147,7 +148,7 @@ public class AlgFactory {
 
                 Policy qPolicy = qAgent.planFromState(initialState);
 
-                return new Pair<>(qAgent, qPolicy);
+                return Pair.of(qAgent, qPolicy);
             }
         };
     }

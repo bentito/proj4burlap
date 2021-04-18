@@ -12,8 +12,8 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
-import javafx.util.Pair;
 import ml_assn4.problem_generation.GraphProblem;
+import org.apache.commons.lang3.tuple.Pair;
 import org.graphstream.graph.Graph;
 
 import java.util.List;

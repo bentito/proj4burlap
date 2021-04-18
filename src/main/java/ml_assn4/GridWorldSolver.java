@@ -11,9 +11,9 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import javafx.util.Pair;
 import ml_assn4.problem_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
