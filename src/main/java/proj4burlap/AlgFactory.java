@@ -134,7 +134,7 @@ public class AlgFactory {
         return new AlgExperiment() {
             @Override
             String getAlgName() {
-                return "Q-Learning";
+                return "Q-Learning-"+policyType+"-"+policyKnob;
             }
 
             @Override
