@@ -102,6 +102,7 @@ public class AlgFactory {
 
                 CustomValueIteration valuePlanner = new CustomValueIteration(currentDomain, gamma, hashingFactory, maxDelta, maxIterations);
                 valuePlanner.toggleReachabiltiyTerminalStatePruning(true);
+                valuePlanner.toggleDebugPrinting(true);
                 GreedyQPolicy valuePolicy = valuePlanner.planFromState(initialState);
 
                 return Pair.of(valuePlanner, valuePolicy);
@@ -122,7 +123,7 @@ public class AlgFactory {
                 // policy iteration
                 SimpleHashableStateFactory hashingFactory = new SimpleHashableStateFactory();
                 PolicyIteration policyPlanner = new CustomPolicyIteration((SADomain)domain, gamma, hashingFactory, maxDelta, maxEvalIterations, maxPolicyIterations);
-
+                policyPlanner.toggleDebugPrinting(true);
                 GreedyQPolicy policyPolicy = policyPlanner.planFromState(initialState);
 
                 return Pair.of(policyPlanner, policyPolicy);
