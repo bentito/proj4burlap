@@ -6,6 +6,7 @@ import burlap.mdp.core.Domain;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -36,7 +37,7 @@ public abstract class ProblemAttempt {
     }
 
     protected void finishMeasureTime(String algName){
-        System.out.printf("%s Experiment Duration [%d]\n", algName, System.nanoTime() - startTime);
+        System.out.printf("%s Experiment Duration [%d] milliseconds\n", algName, Duration.ofNanos(System.nanoTime() - startTime).toMillis());
     }
 
     @SafeVarargs
