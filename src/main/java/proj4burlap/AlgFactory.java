@@ -148,7 +148,7 @@ public class AlgFactory {
                 QLearning qAgent = (QLearning) qAgentFactory.generateAgent();
 
                 Policy qPolicy = qAgent.planFromState(initialState);
-
+                System.out.println("q agent last num steps: " + qAgent.getLastNumSteps());
                 return Pair.of(qAgent, qPolicy);
             }
         };
