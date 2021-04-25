@@ -4,6 +4,8 @@ Execution instructions:
 
     Clone git repository
         git@github.com:bentito/proj4burlap.git
+        cd proj4burlap
+        git checkout master
 
     Install Java 8 SDK
         https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
