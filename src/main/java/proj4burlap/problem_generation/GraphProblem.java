@@ -1,7 +1,7 @@
-package ml_assn4.problem_generation;
+package proj4burlap.problem_generation;
 
 import burlap.domain.singleagent.graphdefined.GraphDefinedDomain;
-import ml_assn4.Main;
+import proj4burlap.Main;
 import org.graphstream.algorithm.generator.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;

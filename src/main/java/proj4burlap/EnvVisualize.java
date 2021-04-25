@@ -1,4 +1,4 @@
-package ml_assn4;
+package proj4burlap;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.auxiliary.StateReachability;
@@ -11,7 +11,7 @@ import burlap.mdp.singleagent.SADomain;
 import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
-import ml_assn4.problem_generation.GraphProblem;
+import proj4burlap.problem_generation.GraphProblem;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

@@ -1,4 +1,4 @@
-package ml_assn4.problem_generation;
+package proj4burlap.problem_generation;
 
 public class Cell {
     public int i;

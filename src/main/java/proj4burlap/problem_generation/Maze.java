@@ -1,6 +1,6 @@
-package ml_assn4.problem_generation;
+package proj4burlap.problem_generation;
 
-import ml_assn4.Main;
+import proj4burlap.Main;
 
 import java.util.ArrayList;
 import java.util.Random;

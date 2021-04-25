@@ -1,4 +1,4 @@
-package ml_assn4;
+package proj4burlap;
 
 import burlap.behavior.singleagent.learning.LearningAgentFactory;
 import burlap.mdp.auxiliary.DomainGenerator;

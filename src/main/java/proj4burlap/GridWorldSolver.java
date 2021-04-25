@@ -1,4 +1,4 @@
-package ml_assn4;
+package proj4burlap;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.valuefunction.ValueFunction;
@@ -11,7 +11,7 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
-import ml_assn4.problem_generation.Maze;
+import proj4burlap.problem_generation.Maze;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,8 +22,8 @@ public class GridWorldSolver extends ProblemAttempt {
     int w;
     int h;
 
-    int mazeWdth = 10;
-    int mazeHeight = 10;
+    int mazeWdth = 6;
+    int mazeHeight = 6;
 
     class CustomGridWorldRewardFunction extends GridWorldRewardFunction {
 

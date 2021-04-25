@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <group.id>org.cwhite75.mlassn4</group.id>
-        <artifact.name>ml_assn4</artifact.name>
+        <group.id>com.tofeltech</group.id>
+        <artifact.name>proj4burlap</artifact.name>
     </properties>
 
     <groupId>${group.id}</groupId>
@@ -51,7 +51,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ml_assn4.Main</mainClass>
+                            <mainClass>proj4burlap.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -3,7 +3,7 @@ CS7641 Assignment 4: Markov Decision Processes
 Execution instructions:
 
     Clone git repository
-        https://github.com/cameronwhite08/ml_assn4j.git
+        git@github.com:bentito/proj4burlap.git
 
     Install Java 8 SDK
         https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
@@ -15,4 +15,4 @@ Execution instructions:
         mvn package
 
     Run project code
-        java -jar target/ml_assn4.jar
+        java -jar target/proj4burlap.jar

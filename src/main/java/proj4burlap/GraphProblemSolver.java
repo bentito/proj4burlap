@@ -1,4 +1,4 @@
-package ml_assn4;
+package proj4burlap;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
@@ -12,7 +12,7 @@ import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
-import ml_assn4.problem_generation.GraphProblem;
+import proj4burlap.problem_generation.GraphProblem;
 import org.apache.commons.lang3.tuple.Pair;
 import org.graphstream.graph.Graph;
 
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class GraphProblemSolver extends ProblemAttempt {
 
     Graph currentGraph = null;
-    int goalState = 776;
-    int startState = 1435;
+    int goalState = 35;
+    int startState = 72;
     int numNodes;
 
     public GraphProblemSolver(int numNodes) {

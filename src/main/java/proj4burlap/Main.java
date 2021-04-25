@@ -1,4 +1,4 @@
-package ml_assn4;
+package proj4burlap;
 
 import burlap.debugtools.RandomFactory;
 
@@ -13,9 +13,16 @@ public class Main {
     private static void executeProblem(ProblemAttempt problem, double qMaxDelta, int vipiPlotLength, int qPlotLength){
         List<AlgExperiment> algList = new ArrayList<>();
         //comment one at a time to screenshot each alg display (default graph viewer reuses same window so paths overlap)
-        algList.add(AlgFactory.getVIAlg(0.99, 0.9, 1000));
-        algList.add(AlgFactory.getPIAlg(0.99, 0.9, 1000, 100));
-        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, qMaxDelta));
+//        algList.add(AlgFactory.getVIAlg(0.99, 0.9, 1000));
+//        algList.add(AlgFactory.getPIAlg(0.99, 0.9, 1000, 100));
+//        String policyType = "boltzmann"; // knob is temperature, low value = greedy, high = random
+//        String policyType = "egreedy"; // knob is epsilon, low value = greedy, high = random
+        String policyType = "detgreedy";
+//        String policyType = "random"; // always just random choice for tied actions, no policy knob
+//        String policyType = "apprentice";
+        float policyKnob = 0.1F;
+
+        algList.add(AlgFactory.getQAlg(0.99, 0.3, 0.1, qMaxDelta, policyType, policyKnob));
 
         problem.performExperiment(algList);
 
@@ -26,7 +33,7 @@ public class Main {
         );
         problem.createLearningPlots(
                 qPlotLength,
-                AlgFactory.getQLearner(0.99, 0.3, 0.1, qMaxDelta)
+                AlgFactory.getQLearner(0.99, 0.3, 0.1, qMaxDelta, policyType, policyKnob)
         );
     }
 
@@ -37,7 +44,7 @@ public class Main {
     }
 
     public static void problem2(){
-        ProblemAttempt problem = new GraphProblemSolver(2000);
+        ProblemAttempt problem = new GraphProblemSolver(100);
 
         executeProblem(problem, 0.06, 12, 250);
     }
@@ -48,7 +55,7 @@ public class Main {
         RandomFactory.seedMapped(0, SEED);
         System.setProperty("org.graphstream.ui", "swing");
 
-        problem1();
-        problem2();
+        problem1(); // grid world
+//        problem2(); // graph problem
     }
 }

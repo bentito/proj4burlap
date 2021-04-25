@@ -1,4 +1,4 @@
-package ml_assn4.custom_algs;
+package proj4burlap.custom_algs;
 
 import burlap.behavior.policy.GreedyQPolicy;
 import burlap.behavior.policy.PolicyUtils;
